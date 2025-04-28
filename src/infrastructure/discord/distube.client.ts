@@ -1,6 +1,6 @@
 import { DisTube, DisTubeOptions, Plugin } from 'distube';
 import { Client } from 'discord.js';
-import { IConfigBot } from '../../doman/interface';
+import { IConfigBot } from '../../doman/types';
 
 interface IDistubeClient {
    client: Client<boolean>,

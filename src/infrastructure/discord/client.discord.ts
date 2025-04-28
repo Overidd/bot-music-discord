@@ -1,6 +1,6 @@
 import { Client, Collection, GatewayIntentBits } from 'discord.js'
-import { IConfigBot } from '../../doman/interface'
 import DisTube from 'distube'
+import { IConfigBot } from '../../doman/types';
 
 interface ICommand {
    name: string;
@@ -11,7 +11,7 @@ interface ICommand {
 export class ClientDiscord extends Client {
    public config?: IConfigBot;
    public player?: DisTube;
-   public command?: Collection<string, ICommand>;
+   public command: Collection<string, ICommand> = new Collection();
    public language?: string;
 
    constructor() {

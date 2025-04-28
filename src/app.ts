@@ -15,7 +15,13 @@ const main = async () => {
          new YtDlpPlugin()
       ]
    });
+
+
+   client.login(configBot.TOKENS[0]);
 }
+
+
+
 
 
 (async () => {
