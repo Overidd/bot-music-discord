@@ -5,14 +5,16 @@ import { SpotifyPlugin } from '@distube/spotify';
 import { YtDlpPlugin } from '@distube/yt-dlp';
 
 const main = async () => {
-   const client = ClientDiscord.create();
-   const distube = DistubeClient.create(
+   const client = new ClientDiscord();
+   const distube = new DistubeClient({
       client,
       configBot,
-      ffmpegPath.path, [
-      new SpotifyPlugin(),
-      new YtDlpPlugin()
-   ]);
+      ffmpegPath: ffmpegPath.path,
+      plugins: [
+         new SpotifyPlugin(),
+         new YtDlpPlugin()
+      ]
+   });
 }
 
 
