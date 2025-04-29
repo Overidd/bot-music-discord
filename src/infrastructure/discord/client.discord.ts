@@ -1,6 +1,6 @@
 import { Client, Collection, GatewayIntentBits } from 'discord.js'
 import { IConfigBot } from '../../doman/types';
-import DisTube from 'distube'
+import DisTube, { DisTubeEvents } from 'distube'
 
 interface ICommand {
    name: string;
@@ -66,7 +66,7 @@ export class ClientDiscord extends Client {
 
    public setOnPlayerEvent(events: { name: string, execute: (...args: any[]) => void }[]): this {
       for (const { name, execute } of events) {
-         // this.player?.on(event, execute);
+         this.player?.on(name as keyof DisTubeEvents, execute);
       }
       return this;
    }

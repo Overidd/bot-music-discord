@@ -1,6 +1,6 @@
-import { Collection } from 'discord.js';
 import fs from 'fs/promises';
 import path from 'path';
+import { Collection } from 'discord.js';
 import { IConfigBot } from '../../doman/types';
 
 export class CommandFileLoader {
@@ -22,7 +22,7 @@ export class CommandFileLoader {
 
          const { command } = require(path.join(pathDir, file));
          this.commands.set(command.data.name, command);
-         
+
          console.log(`Loaded command: ${command.data.name}`);
       }
       return this.commands;

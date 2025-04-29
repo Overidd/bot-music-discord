@@ -1,16 +1,14 @@
-import { DisTube, DisTubeOptions, Plugin } from 'distube';
 import { Client } from 'discord.js';
-import { IConfigBot } from '../../doman/types';
+import { DisTube, DisTubeOptions, DisTubePlugin } from 'distube';
 
 interface IDistubeClient {
    client: Client<boolean>,
-   configBot: IConfigBot,
    ffmpegPath: string,
-   plugins: any[]
+   plugins: DisTubePlugin[]
 }
 
 export class DistubeClient extends DisTube {
-   constructor({ client, configBot, ffmpegPath, plugins }: IDistubeClient) {
+   constructor({ client, ffmpegPath, plugins }: IDistubeClient) {
       const distubeOptions: DisTubeOptions = {
          // leaveOnStop: configBot.voiceConfig.leaveOnStop,
          // leaveOnFinish: configBot.voiceConfig.leaveOnFinish,
@@ -21,7 +19,7 @@ export class DistubeClient extends DisTube {
          ffmpeg: {
             path: ffmpegPath
          },
-         plugins,
+         plugins: plugins,
       };
 
       super(client, distubeOptions);

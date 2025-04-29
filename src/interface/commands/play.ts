@@ -41,14 +41,13 @@ const execute = async (interaction: CustonInteraction) => {
    }
 
    try {
-      const stream = await interaction.client.player?.play(
+      await interaction.client.player?.play(
          voiceChannel,
          query!, {
          member: interaction.member,
          textChannel: textChannel,
       });
 
-      console.log(stream);
       interaction.editReply('Reproduciendo música');
 
    } catch (error) {

@@ -1,15 +1,13 @@
 import ffmpegPath from '@ffmpeg-installer/ffmpeg';
-import { configBot } from './config';
 import { YtDlpPlugin } from '@distube/yt-dlp';
 import { SpotifyPlugin } from '@distube/spotify';
+import { SoundCloudPlugin } from '@distube/soundcloud';
 import { ClientDiscord, DistubeClient } from './infrastructure/discord';
 import { CommandFileLoader, EventFileLoader } from './infrastructure/fileLoader';
-import SoundCloudPlugin from '@distube/soundcloud';
+import { configBot } from './config';
 
+// process.env.FFMPEG_PATH = ffmpegPath.path;
 const main = async () => {
-
-   process.env.FFMPEG_PATH = ffmpegPath.path;
-
    const commands = await new CommandFileLoader(configBot)
       .loadCommands();
    const events = await new EventFileLoader(configBot)
@@ -18,7 +16,6 @@ const main = async () => {
    const client = new ClientDiscord();
    const distube = new DistubeClient({
       client,
-      configBot,
       ffmpegPath: ffmpegPath.path,
       plugins: [
          new SpotifyPlugin(),

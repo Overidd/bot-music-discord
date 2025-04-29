@@ -20,6 +20,7 @@ const execute = async (interaction: CustonInteraction) => {
       // console.log(interaction);
       guildHandler.setNext(channelHandler).setNext(interactionHandler)
       await guildHandler.handle(interaction, {})
+
    } catch (error) {
       console.error(error);
    }
