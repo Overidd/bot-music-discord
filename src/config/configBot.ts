@@ -1,10 +1,13 @@
-import { IConfigBot } from '../doman/interface';
+
+import { IConfigBot } from '../doman/types';
 import { ENV } from './env';
 
 
 export const configBot: IConfigBot = {
-   TOKENS: [ENV.TOKEN_SECRET_BOT],
+   TOKEN: ENV.TOKEN_SECRET_BOT,
    ownerID: [ENV.GUILD_ID_SERVER], //escribe tu ID de usuario de Discord. Ejemplo: ["id"] o ["id1","id2"]
+   pathCommands: './src/interface/commands',
+   pathEvents: './src/interface/events',
    webBotInvite: 'botInvite',
    supportServer: 'supportServer',
    mongodbURL: 'mongodb://admin:adminpassword@localhost:27017',

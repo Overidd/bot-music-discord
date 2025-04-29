@@ -1,6 +1,6 @@
 import { Client, Collection, GatewayIntentBits } from 'discord.js'
-import DisTube from 'distube'
 import { IConfigBot } from '../../doman/types';
+import DisTube from 'distube'
 
 interface ICommand {
    name: string;
@@ -11,7 +11,7 @@ interface ICommand {
 export class ClientDiscord extends Client {
    public config?: IConfigBot;
    public player?: DisTube;
-   public command: Collection<string, ICommand> = new Collection();
+   public commands: Collection<string, ICommand> = new Collection();
    public language?: string;
 
    constructor() {
@@ -23,8 +23,13 @@ export class ClientDiscord extends Client {
       })
    }
 
-   public setCommand(command: Collection<string, any>): this {
-      this.command = command;
+   public setCommand(commands: Collection<string, any>): this {
+      this.commands = commands;
+      return this;
+   }
+
+   public addCommand(command: ICommand): this {
+      this.commands.set(command.name, command);
       return this;
    }
 
@@ -40,6 +45,29 @@ export class ClientDiscord extends Client {
 
    public setLanguage(language: string): this {
       this.language = language || 'es';
+      return this;
+   }
+
+   public setOnceClientEvent(events: { event: string, execute: (...args: any[]) => void }[]): this {
+
+      for (const { event, execute } of events) {
+         this.once(event, execute);
+      };
+      return this;
+   }
+
+   public setOnClientEvent(events: { event: string, execute: (...args: any[]) => void }[]): this {
+
+      for (const { event, execute } of events) {
+         this.on(event, execute);
+      }
+      return this;
+   }
+
+   public setOnPlayerEvent(events: { event: string, execute: (...args: any[]) => void }[]): this {
+      for (const { event, execute } of events) {
+         // this.player?.on(event, execute);
+      }
       return this;
    }
 }

@@ -1,11 +1,13 @@
 export interface IConfigBot {
-   TOKENS: string[];
+   TOKEN: string;
    ownerID: string[];
    webBotInvite: string;
    supportServer: string;
    mongodbURL: string;
    status: string;
    language: string;
+   pathCommands: string;
+   pathEvents: string;
 
    playlistSettings: {
       maxPlaylist: number;
