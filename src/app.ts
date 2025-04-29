@@ -4,11 +4,14 @@ import { YtDlpPlugin } from '@distube/yt-dlp';
 import { SpotifyPlugin } from '@distube/spotify';
 import { ClientDiscord, DistubeClient } from './infrastructure/discord';
 import { CommandFileLoader, EventFileLoader } from './infrastructure/fileLoader';
+import SoundCloudPlugin from '@distube/soundcloud';
 
 const main = async () => {
+
+   process.env.FFMPEG_PATH = ffmpegPath.path;
+
    const commands = await new CommandFileLoader(configBot)
       .loadCommands();
-
    const events = await new EventFileLoader(configBot)
       .loadEvents();
 
@@ -19,6 +22,7 @@ const main = async () => {
       ffmpegPath: ffmpegPath.path,
       plugins: [
          new SpotifyPlugin(),
+         new SoundCloudPlugin(),
          new YtDlpPlugin()
       ]
    });
@@ -29,6 +33,8 @@ const main = async () => {
       .setOnceClientEvent(events.onceEvents)
       .setOnClientEvent(events.onEvents)
       .login(configBot.TOKEN);
+
+   console.log('Bot iniciado');
 }
 
 (async () => {

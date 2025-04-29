@@ -9,7 +9,7 @@ const execute = async (client: any) => {
    console.log(`¡Listo! Inicia sesión como ${client.user.tag}`);
 }
 
-export default {
+export const event = {
    ...options,
    execute
 }

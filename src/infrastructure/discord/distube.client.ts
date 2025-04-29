@@ -11,14 +11,16 @@ interface IDistubeClient {
 
 export class DistubeClient extends DisTube {
    constructor({ client, configBot, ffmpegPath, plugins }: IDistubeClient) {
-      const distubeOptions = {
-         leaveOnStop: configBot.voiceConfig.leaveOnStop,
-         leaveOnFinish: configBot.voiceConfig.leaveOnFinish,
-         leaveOnEmpty: configBot.voiceConfig.leaveOnEmpty.status,
+      const distubeOptions: DisTubeOptions = {
+         // leaveOnStop: configBot.voiceConfig.leaveOnStop,
+         // leaveOnFinish: configBot.voiceConfig.leaveOnFinish,
+         // leaveOnEmpty: configBot.voiceConfig.leaveOnEmpty.status,
          emitNewSongOnly: true,
          emitAddSongWhenCreatingQueue: false,
          emitAddListWhenCreatingQueue: false,
-         ffmpegPath,
+         ffmpeg: {
+            path: ffmpegPath
+         },
          plugins,
       };
 

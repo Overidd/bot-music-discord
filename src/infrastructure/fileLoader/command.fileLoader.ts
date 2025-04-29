@@ -9,21 +9,22 @@ export class CommandFileLoader {
 
    constructor(configBot: IConfigBot) {
       this.config = configBot
-      this.loadCommands();
    }
 
    async loadCommands(): Promise<Collection<string, any>> {
       if (!this.config?.pathCommands) throw new Error('No pathCommands');
 
-      const files = await fs.readdir(this.config.pathCommands);
+      const pathDir = path.join(__dirname, '../../../', this.config.pathCommands)
+
+      const files = await fs.readdir(pathDir);
       for (const file of files) {
-         if (!file.endsWith('.js')) continue;
+         if (!file.endsWith('.ts')) continue;
 
-         const command = require(path.join(this.config.pathCommands, file));
-         this.commands.set(command.name, command);
-         console.log(`Loaded command: ${command.name}`);
+         const { command } = require(path.join(pathDir, file));
+         this.commands.set(command.data.name, command);
+         
+         console.log(`Loaded command: ${command.data.name}`);
       }
-
       return this.commands;
    }
 }

@@ -12,11 +12,20 @@ const execute = async (interaction: CustonInteraction) => {
    const channelHandler = new ChannelHandler();
    const interactionHandler = new InteractionHandler();
 
-   guildHandler.setNext(channelHandler).setNext(interactionHandler)
-   await guildHandler.handle(interaction, {})
+   if (interaction.isChatInputCommand()) {
+      // interaction?.deferReply()
+   }
+
+   try {
+      // console.log(interaction);
+      guildHandler.setNext(channelHandler).setNext(interactionHandler)
+      await guildHandler.handle(interaction, {})
+   } catch (error) {
+      console.error(error);
+   }
 };
 
-export default {
+export const event = {
    ...options,
    execute
 };

@@ -48,24 +48,24 @@ export class ClientDiscord extends Client {
       return this;
    }
 
-   public setOnceClientEvent(events: { event: string, execute: (...args: any[]) => void }[]): this {
+   public setOnceClientEvent(events: { name: string, execute: (...args: any[]) => void }[]): this {
 
-      for (const { event, execute } of events) {
-         this.once(event, execute);
+      for (const { name, execute } of events) {
+         this.once(name, execute);
       };
       return this;
    }
 
-   public setOnClientEvent(events: { event: string, execute: (...args: any[]) => void }[]): this {
+   public setOnClientEvent(events: { name: string, execute: (...args: any[]) => void }[]): this {
 
-      for (const { event, execute } of events) {
-         this.on(event, execute);
+      for (const { name, execute } of events) {
+         this.on(name, execute);
       }
       return this;
    }
 
-   public setOnPlayerEvent(events: { event: string, execute: (...args: any[]) => void }[]): this {
-      for (const { event, execute } of events) {
+   public setOnPlayerEvent(events: { name: string, execute: (...args: any[]) => void }[]): this {
+      for (const { name, execute } of events) {
          // this.player?.on(event, execute);
       }
       return this;
