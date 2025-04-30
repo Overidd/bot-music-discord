@@ -6,14 +6,14 @@ interface Props {
    currentDuration?: string,
    imageMusic?: string,
    voiceChannel?: string,
+   quantityInQueue?: string,
 }
 
-export const controlComponent = ({ nameMusic, duration, currentDuration, imageMusic, voiceChannel }: Props) => {
+export const controlComponent = ({ nameMusic, duration, currentDuration, imageMusic, voiceChannel, quantityInQueue }: Props) => {
 
    const infoMusicEmbed = new EmbedBuilder()
       .setColor('#0099ff')
       .setDescription(`\`🎵 ${nameMusic}\``)
-      .setThumbnail(`${imageMusic}`)
       .setAuthor({
          name: 'Panel de control',
       })
@@ -24,20 +24,24 @@ export const controlComponent = ({ nameMusic, duration, currentDuration, imageMu
          },
          {
             name: `⏱️ Duracion`,
-            value: `\`${duration}\``,
+            value: `\`${currentDuration} / ${duration}\``,
             inline: true,
          },
          {
-            name: '⌛ Tiempo transcurrido',
-            value: `\`${currentDuration}\``,
+            name: '🎧 Canal de voz',
+            value: `\`   ${voiceChannel}   \``,
             inline: true
          },
          {
-            name: '🎧 Canal de voz',
-            value: `\`${voiceChannel}\``,
+            name: '📃 En cola',
+            value: `\`   ${quantityInQueue}   \``,
             inline: true
-         }
+         },
       );
+   console.log({ imageMusic });
+   if (imageMusic && typeof imageMusic === 'string' && imageMusic.startsWith('http')) {
+      infoMusicEmbed.setThumbnail(`${imageMusic}`);
+   }
 
    const btnBack = new ButtonBuilder()
       .setCustomId('btnBack')

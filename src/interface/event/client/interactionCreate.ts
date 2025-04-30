@@ -12,17 +12,19 @@ const execute = async (interaction: CustonInteraction) => {
    const channelHandler = new ChannelHandler();
    const interactionHandler = new InteractionHandler();
 
-   // try {
-   guildHandler
-      .setNext(channelHandler)
-      .setNext(interactionHandler);
+   try {
+      guildHandler
+         .setNext(channelHandler)
+         .setNext(interactionHandler);
 
-   await guildHandler
-      .handle(interaction, {})
+      await guildHandler
+         .handle(interaction, {})
 
-   // } catch (error) {
-   // console.error(error);
-   // }
+   } catch (error) {
+
+      console.error(error);
+
+   }
 };
 
 export const event = {

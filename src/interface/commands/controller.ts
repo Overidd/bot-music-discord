@@ -14,13 +14,14 @@ const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isChatInputCommand()) return;
 
    const queue = interaction?.client?.player?.getQueue(interaction.guildId!);
-
+   console.log((queue?.songs.length || 1) - 1);
    const { components, embeds } = controlComponent({
       nameMusic: queue?.songs[0].name,
       duration: queue?.formattedDuration,
       currentDuration: queue?.formattedCurrentTime,
       imageMusic: queue?.songs[0].thumbnail,
       voiceChannel: queue?.voiceChannel?.name,
+      quantityInQueue: String((queue?.songs.length ?? 1) - 1)
    })
 
    const sentMessage = await interaction.reply({

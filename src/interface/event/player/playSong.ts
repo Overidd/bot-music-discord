@@ -16,9 +16,10 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
    const { components, embeds } = controlComponent({
       nameMusic: song?.name,
       duration: song?.formattedDuration,
-      currentDuration: song?.formattedDuration,
+      currentDuration: '00:00',
       imageMusic: song?.thumbnail,
       voiceChannel: queue.voiceChannel?.name,
+      quantityInQueue: String(queue.songs.length - 1)
    })
 
    const sentMessage = await queue.textChannel?.send({

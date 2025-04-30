@@ -18,6 +18,7 @@ const options = {
 const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isChatInputCommand()) return;
 
+
    const voiceChannel = interaction.member.voice.channel;
 
    if (!voiceChannel) {
@@ -114,3 +115,33 @@ export const command = {
    ...options,
    execute
 };
+
+
+// import { getPlaylist } from 'spotify-url-info'; // usa CommonJS si lo necesitas
+// import fetch from 'node-fetch';
+
+// // Requerido por spotify-url-info
+// const spotifyClient = getPlaylist(fetch);
+
+// async function validarYReproducir(interaction, url: string) {
+//    try {
+//       // Si es un link de Spotify playlist
+//       if (url.includes('spotify.com/playlist')) {
+//          const data = await spotifyClient(url);
+
+//          if (data?.tracks?.length > 100) {
+//             return interaction.reply('⚠️ La playlist tiene más de 100 canciones y no puede ser reproducida.');
+//          }
+//       }
+
+//       // Si pasa la validación, reproducimos normalmente
+//       distube.play(interaction.member.voice.channel, url, {
+//          textChannel: interaction.channel,
+//          member: interaction.member,
+//       });
+
+//    } catch (err) {
+//       console.error('Error validando playlist:', err);
+//       interaction.reply('❌ Ocurrió un error al validar la playlist.');
+//    }
+// }

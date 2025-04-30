@@ -11,6 +11,7 @@ const execute = async (client: any, queue: Queue, song: Song, ...args: any) => {
 
    console.log('Evento ADD_SONG', args);
 
+
    const emdeb = new EmbedBuilder()
       .setColor('#0099ff')
       .setDescription(`Se Agrego: \`${song.name}\`⏱️[${song.formattedDuration}]`)
@@ -24,7 +25,7 @@ const execute = async (client: any, queue: Queue, song: Song, ...args: any) => {
    const timeout = setTimeout(() => {
       message.delete().catch(console.error);
       clearTimeout(timeout)
-   }, 10 * 1000); // 10 segundos
+   }, 60 * 1000 * 7)
 }
 
 export const event = {

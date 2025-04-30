@@ -21,7 +21,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
    const timeout = setTimeout(() => {
       message.delete().catch(console.error);
       clearTimeout(timeout)
-   }, 10 * 1000); // 10 segundos
+   }, 60 * 1000); // 1 minuto
 }
 
 export const event = {
