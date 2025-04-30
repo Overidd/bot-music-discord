@@ -6,3 +6,13 @@ export type CustonInteraction = Interaction & {
    member: GuildMember
 };
 // interaction.member as GuildMember
+
+export type ICommand = {
+   data: { name: string, toJSON: () => any },
+   execute: (...args: any[]) => any
+};
+
+export type IButton = {
+   data: { name: string },
+   execute: (...args: any[]) => any
+};

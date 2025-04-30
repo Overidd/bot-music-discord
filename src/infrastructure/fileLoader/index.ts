@@ -1,2 +1,2 @@
-export * from './command.fileLoader';
+export * from './Interaction.fileLoader';
 export * from './event.fileLoader';

@@ -3,7 +3,7 @@ import { YtDlpPlugin } from '@distube/yt-dlp';
 import { SpotifyPlugin } from '@distube/spotify';
 import { SoundCloudPlugin } from '@distube/soundcloud';
 import { ClientDiscord, DistubeClient } from './infrastructure/discord';
-import { CommandFileLoader, EventFileLoader } from './infrastructure/fileLoader';
+import { InteractionFileLoader, EventFileLoader } from './infrastructure/fileLoader';
 import { configBot } from './config';
 
 const main = async () => {
@@ -18,27 +18,25 @@ const main = async () => {
       ]
    });
 
-   const commands = await new CommandFileLoader(configBot)
-      .loadCommands();
-   const events = await new EventFileLoader(configBot)
-      .loadEvents();
+   const interaction = await new InteractionFileLoader(configBot)
+      .loading()
 
-   client.setCommand(commands)
-      .setConfig(configBot)
+   const events = await new EventFileLoader(configBot)
+      .loading();
+
+   client.setConfig(configBot)
       .setPlayer(distube)
-      .setOnceClientEvent(events.onceClientEvents)
+      .setCommand(interaction.commands)
+      .setButtons(interaction.buttons)
       .setOnClientEvent(events.onClientEvents)
       .setOnPlayerEvent(events.onPlayerEvents)
+      .setOnceClientEvent(events.onceClientEvents)
       .login(configBot.TOKEN);
 }
 
 (async () => {
    await main();
 })();
-
-
-
-
 
 
 

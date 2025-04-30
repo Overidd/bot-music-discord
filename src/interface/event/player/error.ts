@@ -10,7 +10,7 @@ const options = {
 const execute = async (client: ClientDiscord, errorMessage: string, queue: Queue, song: Song) => {
 
 
-   console.log(typeof errorMessage);
+   console.log(errorMessage);
    if (String(errorMessage)?.includes('FFMPEG_EXITED')) {
 
       return await queue.textChannel?.send({
@@ -26,7 +26,6 @@ export const event = {
    ...options,
    execute
 }
-
 
 {
    textChannel: ` DisTubeError [FFMPEG_EXITED]: ffmpeg exited with code 1

@@ -4,7 +4,6 @@ import { CustonInteraction } from '../../../doman/types';
 export class InteractionHandler extends BaseInteractionHandler {
    private interaction?: CustonInteraction
 
-
    override async handle(interaction: CustonInteraction): Promise<void> {
       this.interaction = interaction
 
@@ -20,8 +19,6 @@ export class InteractionHandler extends BaseInteractionHandler {
          default:
             break;
       }
-      // await interaction.execute(interaction)
-
    }
 
    private async command() {
@@ -33,6 +30,10 @@ export class InteractionHandler extends BaseInteractionHandler {
    }
 
    private async button() {
+      if (!this.interaction?.isButton()) return
 
+      const button = this.interaction?.client.buttons?.get(this.interaction?.customId)
+
+      button?.execute(this.interaction)
    }
 }

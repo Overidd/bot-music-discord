@@ -1,16 +1,15 @@
 import { REST, Routes } from 'discord.js';
 import { configBot, ENV } from './config';
-import { CommandFileLoader } from './infrastructure/fileLoader';
+import { InteractionFileLoader } from './infrastructure/fileLoader';
 
 const main = async () => {
-   const commands = await new CommandFileLoader(configBot)
-      .loadCommands();
+   const { commands } = await new InteractionFileLoader(configBot)
+      .loading();
 
    const rest = new REST().setToken(configBot.TOKEN);
 
-
    try {
-      console.log(`Empezó a actualizar${commands.size} application (/) commands.`);
+      console.log(`Empezó a actualizar ${commands.size} application (/) commands.`);
 
       const data = await rest.put(
          Routes.applicationGuildCommands(ENV.CLIENT_ID_BOT, ENV.GUILD_ID_SERVER),

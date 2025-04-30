@@ -7,6 +7,7 @@ export interface IConfigBot {
    status: string;
    language: string;
    pathCommands: string;
+   pathButtons: string,
    pathEvents: string;
    pathEventsPlayer: string;
 

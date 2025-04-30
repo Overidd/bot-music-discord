@@ -13,7 +13,7 @@ export class EventFileLoader {
       this.config = configBot
    }
 
-   public async loadEvents(): Promise<this> {
+   public async loading(): Promise<this> {
       if (!this.config?.pathEvents) throw new Error('No pathEvents');
 
       const pathDir = path.join(__dirname, '../../../', this.config.pathEvents)

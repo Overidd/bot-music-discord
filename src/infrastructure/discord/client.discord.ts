@@ -1,17 +1,12 @@
 import { Client, Collection, GatewayIntentBits } from 'discord.js'
-import { IConfigBot } from '../../doman/types';
+import { IButton, ICommand, IConfigBot } from '../../doman/types';
 import DisTube, { DisTubeEvents } from 'distube'
-
-interface ICommand {
-   name: string;
-   description: string;
-   execute: (interaction: any) => Promise<void>;
-}
 
 export class ClientDiscord extends Client {
    public config?: IConfigBot;
    public player?: DisTube;
    public commands: Collection<string, ICommand> = new Collection();
+   public buttons: Collection<string, IButton> = new Collection();
    public language?: string;
 
    constructor() {
@@ -28,9 +23,9 @@ export class ClientDiscord extends Client {
       return this;
    }
 
-   public addCommand(command: ICommand): this {
-      this.commands.set(command.name, command);
-      return this;
+   public setButtons(buttons: Collection<string, any>): this {
+      this.buttons = buttons
+      return this
    }
 
    public setConfig(configBot: IConfigBot): this {
@@ -66,7 +61,7 @@ export class ClientDiscord extends Client {
 
    public setOnPlayerEvent(events: { name: string, execute: (...args: any[]) => void }[]): this {
       for (const { name, execute } of events) {
-         console.log(name, execute );
+         console.log(name, execute);
          this.player?.on(name as keyof DisTubeEvents, (...args: any[]) => execute(this, ...args));
       }
       return this;

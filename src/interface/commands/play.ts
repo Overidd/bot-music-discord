@@ -25,9 +25,9 @@ const execute = async (interaction: CustonInteraction) => {
       return interaction.reply('¡Debes estar en un canal de voz para usar este comando!');
    }
 
-   const existingConnection = getVoiceConnection(interaction.guildId!);
+   // const existingConnection = getVoiceConnection(interaction.guildId!);
 
-   if (existingConnection) existingConnection.destroy();
+   // if (existingConnection) existingConnection.destroy();
 
    const query = interaction.options.getString('query')?.replace(/\(.*?\)|\[.*?\]/g, '').trim();
 
@@ -36,7 +36,9 @@ const execute = async (interaction: CustonInteraction) => {
       return interaction.editReply('Por favor escribe un nombre de música');
    }
 
-   await interaction.deferReply({ ephemeral: true });
+   await interaction.deferReply({
+      flags: MessageFlags.Ephemeral  // ✅ correcta forma moderna
+   });
 
    const isQueue = interaction.client.player?.queues.has(interaction.guildId!);
 
@@ -77,12 +79,14 @@ const execute = async (interaction: CustonInteraction) => {
    }
 
    try {
-      await interaction.client.player?.play(
+      const transaccion = await interaction.client.player?.play(
          voiceChannel,
-         query!, {
+         query, {
          member: interaction.member,
          textChannel: textChannel,
       });
+
+      console.log({ transaccion });
 
       const queue = interaction?.client?.player?.getQueue(interaction.guildId!);
 
@@ -115,6 +119,7 @@ export const command = {
    ...options,
    execute
 };
+
 
 
 // import { getPlaylist } from 'spotify-url-info'; // usa CommonJS si lo necesitas

@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
+import { EventButtons } from "../../../doman/types";
 
 interface Props {
    nameMusic?: string,
@@ -44,49 +45,50 @@ export const controlComponent = ({ nameMusic, duration, currentDuration, imageMu
    }
 
    const btnBack = new ButtonBuilder()
-      .setCustomId('btnBack')
+      .setCustomId(EventButtons.BTN_BACK)
       // .setLabel('Atras')
       .setEmoji('⏪')
       .setStyle(ButtonStyle.Secondary);
+
    const btnPause = new ButtonBuilder()
-      .setCustomId('btnPause')
+      .setCustomId(EventButtons.BTN_PAUSE)
       // .setLabel('Pausar')
       .setEmoji('⏸️')
       .setStyle(ButtonStyle.Secondary);
 
 
    const btnPass = new ButtonBuilder()
-      .setCustomId('btnPass')
+      .setCustomId(EventButtons.BTN_SKIP)
       // .setLabel('Adelantar')
       .setEmoji('⏩')
       .setStyle(ButtonStyle.Secondary);
 
    const btnPlay = new ButtonBuilder()
-      .setCustomId('btnPlay')
+      .setCustomId(EventButtons.BTN_PLAY)
       // .setLabel('Play')
       .setEmoji('▶️')
       .setStyle(ButtonStyle.Secondary);
 
    const btnStop = new ButtonBuilder()
-      .setCustomId('btnStop')
+      .setCustomId(EventButtons.BTN_STOP)
       // .setLabel('Detener')
       .setEmoji('⏹️')
       .setStyle(ButtonStyle.Secondary);
 
    const btnMuteSong = new ButtonBuilder()
-      .setCustomId('btnMuteSong')
+      .setCustomId(EventButtons.BTN_MUTESONG)
       .setLabel('Silenciar')
       .setEmoji('🔇')
       .setStyle(ButtonStyle.Secondary);
 
    const btnActiveSong = new ButtonBuilder()
-      .setCustomId('btnActiveSong')
+      .setCustomId(EventButtons.BTN_ACTIVESONG)
       .setLabel('Activar')
       .setEmoji('🔊')
       .setStyle(ButtonStyle.Secondary);
 
    const btnPlaylist = new ButtonBuilder()
-      .setCustomId('btnPlaylist')
+      .setCustomId(EventButtons.BTN_PLAYLIST)
       .setLabel('Lista de reproduce')
       .setEmoji('📃')
       .setStyle(ButtonStyle.Secondary);
