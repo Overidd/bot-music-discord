@@ -22,9 +22,9 @@ const execute = async (interaction: CustonInteraction) => {
       });
       return;
    }
+   await interaction.reply({ content: '✅ Listo.', ephemeral: true });
 
    await queue.skip();
-   console.log('BTN_SKIP');
 }
 
 export const button = {

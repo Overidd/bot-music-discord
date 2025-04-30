@@ -24,6 +24,8 @@ const execute = async (interaction: CustonInteraction) => {
    }
 
    await queue.previous();
+   await interaction.reply({ content: '✅ Listo.', ephemeral: true });
+
    console.log('BTN_BACK');
 }
 
