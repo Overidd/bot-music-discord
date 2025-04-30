@@ -45,52 +45,52 @@ export const controlComponent = ({ nameMusic, duration, currentDuration, imageMu
    }
 
    const btnBack = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_BACK)
+      .setCustomId(EventButtons.BTN_BACK.name)
       // .setLabel('Atras')
-      .setEmoji('⏪')
+      .setEmoji(EventButtons.BTN_BACK.emoji)
       .setStyle(ButtonStyle.Secondary);
 
    const btnPause = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_PAUSE)
+      .setCustomId(EventButtons.BTN_PAUSE.name)
       // .setLabel('Pausar')
-      .setEmoji('⏸️')
+      .setEmoji(EventButtons.BTN_PAUSE.emoji)
       .setStyle(ButtonStyle.Secondary);
 
 
    const btnPass = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_SKIP)
+      .setCustomId(EventButtons.BTN_SKIP.name)
       // .setLabel('Adelantar')
-      .setEmoji('⏩')
+      .setEmoji(EventButtons.BTN_SKIP.emoji)
       .setStyle(ButtonStyle.Secondary);
 
    const btnPlay = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_PLAY)
+      .setCustomId(EventButtons.BTN_PLAY.name)
       // .setLabel('Play')
-      .setEmoji('▶️')
+      .setEmoji(EventButtons.BTN_PLAY.emoji)
       .setStyle(ButtonStyle.Secondary);
 
    const btnStop = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_STOP)
+      .setCustomId(EventButtons.BTN_STOP.name)
       // .setLabel('Detener')
-      .setEmoji('⏹️')
+      .setEmoji(EventButtons.BTN_STOP.emoji)
       .setStyle(ButtonStyle.Secondary);
 
    const btnMuteSong = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_MUTESONG)
-      .setLabel('Silenciar')
-      .setEmoji('🔇')
+      .setCustomId(EventButtons.BTN_MUTESONG.name)
+      .setLabel(EventButtons.BTN_MUTESONG.label)
+      .setEmoji(EventButtons.BTN_MUTESONG.emoji)
       .setStyle(ButtonStyle.Secondary);
 
    const btnActiveSong = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_ACTIVESONG)
-      .setLabel('Activar')
-      .setEmoji('🔊')
+      .setCustomId(EventButtons.BTN_ACTIVESONG.name)
+      .setLabel(EventButtons.BTN_ACTIVESONG.label)
+      .setEmoji(EventButtons.BTN_ACTIVESONG.emoji)
       .setStyle(ButtonStyle.Secondary);
 
    const btnPlaylist = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_PLAYLIST)
-      .setLabel('Lista de reproduce')
-      .setEmoji('📃')
+      .setCustomId(EventButtons.BTN_PLAYLIST.name)
+      .setLabel(EventButtons.BTN_PLAYLIST.label)
+      .setEmoji(EventButtons.BTN_PLAYLIST.emoji)
       .setStyle(ButtonStyle.Secondary);
 
 

@@ -84,6 +84,9 @@ const execute = async (interaction: CustonInteraction) => {
          query, {
          member: interaction.member,
          textChannel: textChannel,
+         metadata: {
+            previousVolume: 50, // volumen inicial por defecto
+         }
       });
 
       console.log({ transaccion });

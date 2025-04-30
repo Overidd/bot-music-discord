@@ -4,7 +4,7 @@ import { EmdebComponent } from '../../infrastructure/discord';
 
 const options = {
    data: {
-      name: EventButtons.BTN_SKIP.name,
+      name: EventButtons.BTN_STOP.name
    }
 };
 
@@ -12,7 +12,7 @@ const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
    if (!interaction.guildId) return;
 
-   const queue = interaction.client?.player?.getQueue(interaction.guildId);
+   const queue = interaction.client.player?.getQueue(interaction.guildId);
 
    try {
       if (!queue || !queue.playing || queue.songs.length === 0) {
@@ -23,22 +23,15 @@ const execute = async (interaction: CustonInteraction) => {
          return;
       }
 
-      if (queue.songs.length <= 1) {
-         await interaction.reply({
-            embeds: [EmdebComponent.emdebError('🚫 No hay más canciones para saltar.')],
-            flags: MessageFlags.Ephemeral
-         });
-         return;
-      }
-
-      await queue.skip();
+      await queue.stop(); // Detiene todo y sale del canal
       await interaction.reply({
-         content: `${EventButtons.BTN_SKIP.emoji}`,
+         content: `⏹️ Música detenida ${EventButtons.BTN_STOP.emoji}`,
          flags: MessageFlags.Ephemeral
       });
    } catch (error) {
+      console.error('Error al detener la música:', error);
       await interaction.reply({
-         embeds: [EmdebComponent.emdebError('Ocurrió un error al saltar la canción.')],
+         embeds: [EmdebComponent.emdebError('Ocurrió un error al detener.')],
          flags: MessageFlags.Ephemeral
       });
    }

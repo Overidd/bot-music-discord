@@ -4,15 +4,15 @@ import { EmdebComponent } from '../../infrastructure/discord';
 
 const options = {
    data: {
-      name: EventButtons.BTN_SKIP.name,
+      name: EventButtons.BTN_PLAY.name,
    }
 };
 
 const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
-   if (!interaction.guildId) return;
+   if (!interaction?.guildId) return;
 
-   const queue = interaction.client?.player?.getQueue(interaction.guildId);
+   const queue = interaction.client.player?.getQueue(interaction.guildId);
 
    try {
       if (!queue || !queue.playing || queue.songs.length === 0) {
@@ -23,22 +23,22 @@ const execute = async (interaction: CustonInteraction) => {
          return;
       }
 
-      if (queue.songs.length <= 1) {
+      if (!queue.playing || !queue.paused) {
          await interaction.reply({
-            embeds: [EmdebComponent.emdebError('🚫 No hay más canciones para saltar.')],
-            flags: MessageFlags.Ephemeral
+            content: `\`${EventButtons.BTN_PLAY.emoji}\``,
+            flags: MessageFlags.Ephemeral,
          });
          return;
       }
 
-      await queue.skip();
+      await queue.resume();
       await interaction.reply({
-         content: `${EventButtons.BTN_SKIP.emoji}`,
-         flags: MessageFlags.Ephemeral
+         content: `\`${EventButtons.BTN_PLAY.emoji}\``,
+         flags: MessageFlags.Ephemeral,
       });
    } catch (error) {
       await interaction.reply({
-         embeds: [EmdebComponent.emdebError('Ocurrió un error al saltar la canción.')],
+         embeds: [EmdebComponent.emdebError('Ocurrió un error.')],
          flags: MessageFlags.Ephemeral
       });
    }

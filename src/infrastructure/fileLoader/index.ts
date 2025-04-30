@@ -1,2 +1,2 @@
-export * from './Interaction.fileLoader';
+export * from './interaction.fileLoader';
 export * from './event.fileLoader';
