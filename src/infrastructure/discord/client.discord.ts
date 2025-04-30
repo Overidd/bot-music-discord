@@ -66,7 +66,8 @@ export class ClientDiscord extends Client {
 
    public setOnPlayerEvent(events: { name: string, execute: (...args: any[]) => void }[]): this {
       for (const { name, execute } of events) {
-         this.player?.on(name as keyof DisTubeEvents, execute);
+         console.log(name, execute );
+         this.player?.on(name as keyof DisTubeEvents, (...args: any[]) => execute(this, ...args));
       }
       return this;
    }

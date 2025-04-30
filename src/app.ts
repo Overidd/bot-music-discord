@@ -6,13 +6,7 @@ import { ClientDiscord, DistubeClient } from './infrastructure/discord';
 import { CommandFileLoader, EventFileLoader } from './infrastructure/fileLoader';
 import { configBot } from './config';
 
-// process.env.FFMPEG_PATH = ffmpegPath.path;
 const main = async () => {
-   const commands = await new CommandFileLoader(configBot)
-      .loadCommands();
-   const events = await new EventFileLoader(configBot)
-      .loadEvents();
-
    const client = new ClientDiscord();
    const distube = new DistubeClient({
       client,
@@ -20,18 +14,22 @@ const main = async () => {
       plugins: [
          new SpotifyPlugin(),
          new SoundCloudPlugin(),
-         new YtDlpPlugin()
+         new YtDlpPlugin(),
       ]
    });
+
+   const commands = await new CommandFileLoader(configBot)
+      .loadCommands();
+   const events = await new EventFileLoader(configBot)
+      .loadEvents();
 
    client.setCommand(commands)
       .setConfig(configBot)
       .setPlayer(distube)
-      .setOnceClientEvent(events.onceEvents)
-      .setOnClientEvent(events.onEvents)
+      .setOnceClientEvent(events.onceClientEvents)
+      .setOnClientEvent(events.onClientEvents)
+      .setOnPlayerEvent(events.onPlayerEvents)
       .login(configBot.TOKEN);
-
-   console.log('Bot iniciado');
 }
 
 (async () => {

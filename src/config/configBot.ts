@@ -7,7 +7,8 @@ export const configBot: IConfigBot = {
    TOKEN: ENV.TOKEN_SECRET_BOT,
    ownerID: [ENV.GUILD_ID_SERVER], //escribe tu ID de usuario de Discord. Ejemplo: ["id"] o ["id1","id2"]
    pathCommands: './src/interface/commands',
-   pathEvents: './src/interface/events',
+   pathEvents: './src/interface/event/client',
+   pathEventsPlayer: './src/interface/event/player',
    webBotInvite: 'botInvite',
    supportServer: 'supportServer',
    mongodbURL: 'mongodb://admin:adminpassword@localhost:27017',

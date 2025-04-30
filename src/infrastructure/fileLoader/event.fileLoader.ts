@@ -5,8 +5,9 @@ import path from 'path';
 export class EventFileLoader {
 
    private config?: IConfigBot
-   public onceEvents: any[] = [];
-   public onEvents: any[] = [];
+   public onceClientEvents: any[] = [];
+   public onClientEvents: any[] = [];
+   public onPlayerEvents: any[] = [];
 
    constructor(configBot: IConfigBot) {
       this.config = configBot
@@ -25,9 +26,23 @@ export class EventFileLoader {
          const { event } = await require(path.join(pathDir, fileName));
 
          (event.once)
-            ? this.onceEvents.push(event)
-            : this.onEvents.push(event);
+            ? this.onceClientEvents.push(event)
+            : this.onClientEvents.push(event);
       }
+
+      const pathDirPlayer = path.join(__dirname, '../../../', this.config.pathEventsPlayer);
+
+      const fileNamesPlayer = await fs.readdir(pathDirPlayer);
+
+      for (const element of fileNamesPlayer) {
+
+         if (!element.endsWith('.ts')) continue;
+
+         const { event } = await require(path.join(pathDirPlayer, element));
+
+         this.onPlayerEvents.push(event);
+      }
+
       return this;
    }
 }

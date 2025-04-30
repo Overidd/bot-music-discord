@@ -1,0 +1,33 @@
+import { EmbedBuilder, MessageFlags } from 'discord.js';
+import { Events, Queue, Song } from 'distube';
+
+
+const options = {
+   name: Events.ADD_SONG,
+   once: false
+}
+
+const execute = async (client: any, queue: Queue, song: Song, ...args: any) => {
+
+   console.log('Evento ADD_SONG', args);
+
+   const emdeb = new EmbedBuilder()
+      .setColor('#0099ff')
+      .setDescription(`Se Agrego: \`${song.name}\`⏱️[${song.formattedDuration}]`)
+
+   const message = await queue.textChannel?.send({
+      embeds: [emdeb]
+   });
+
+   if (!message) return
+
+   const timeout = setTimeout(() => {
+      message.delete().catch(console.error);
+      clearTimeout(timeout)
+   }, 10 * 1000); // 10 segundos
+}
+
+export const event = {
+   ...options,
+   execute
+}

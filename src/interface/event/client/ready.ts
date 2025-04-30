@@ -6,7 +6,7 @@ const options = {
 }
 
 const execute = async (client: any) => {
-   console.log(`¡Listo! Inicia sesión como ${client.user.tag}`);
+   console.log(`¡Listo! bot iniciado con ${client.user.tag}`);
 }
 
 export const event = {

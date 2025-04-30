@@ -10,4 +10,3 @@ export class ChannelHandler extends BaseInteractionHandler {
       await super.handle(interaction, dataChannel)
    }
 }
-

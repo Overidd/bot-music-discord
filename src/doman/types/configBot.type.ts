@@ -8,6 +8,7 @@ export interface IConfigBot {
    language: string;
    pathCommands: string;
    pathEvents: string;
+   pathEventsPlayer: string;
 
    playlistSettings: {
       maxPlaylist: number;
