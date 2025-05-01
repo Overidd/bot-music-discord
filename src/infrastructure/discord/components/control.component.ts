@@ -11,6 +11,7 @@ interface Props {
    voiceChannel?: string,
    quantityInQueue?: string,
    nameSourceMusic?: string,
+   volumen?: string,
 }
 
 const imageSocialMusic: { [key: string]: string } = {
@@ -29,6 +30,7 @@ export const controlComponent = ({
    voiceChannel,
    quantityInQueue,
    nameSourceMusic,
+   volumen,
 }: Props) => {
 
    const infoMusicEmbed = new EmbedBuilder()
@@ -49,6 +51,11 @@ export const controlComponent = ({
             name: `⏱️ Duracion`,
             value: `\`${currentDuration} / ${duration}\``,
             inline: true,
+         },
+         {
+            name: '🔊 Volumen',
+            value: `\`   ${volumen}%   \``,
+            inline: true
          },
          {
             name: '🎧 Canal de voz',
