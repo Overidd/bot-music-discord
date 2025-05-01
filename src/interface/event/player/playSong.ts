@@ -10,16 +10,17 @@ const options = {
 const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
 
    //TODO: puede ser que pordiramos obtener el idioma del servidor
-   console.log(queue.songs.length);
    if (queue.songs.length > 1) return;
 
    const { components, embeds } = controlComponent({
       nameMusic: song?.name,
+      urlMusic: song.url,
+      nameSourceMusic: song.source,
       duration: song?.formattedDuration,
       currentDuration: '00:00',
       imageMusic: song?.thumbnail,
       voiceChannel: queue.voiceChannel?.name,
-      quantityInQueue: String(queue.songs.length - 1)
+      quantityInQueue: String(queue.songs.length)
    })
 
    const sentMessage = await queue.textChannel?.send({

@@ -1,22 +1,44 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
-import { EventButtons } from "../../../doman/types";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
+import { EventButtons } from '../../../doman/types';
+import { ValidateUrl } from '../../../utils';
 
 interface Props {
    nameMusic?: string,
+   urlMusic?: string,
    duration?: string,
    currentDuration?: string,
    imageMusic?: string,
    voiceChannel?: string,
    quantityInQueue?: string,
+   nameSourceMusic?: string,
 }
 
-export const controlComponent = ({ nameMusic, duration, currentDuration, imageMusic, voiceChannel, quantityInQueue }: Props) => {
+const imageSocialMusic: { [key: string]: string } = {
+   'soundcloud': 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746114336/uzyz3dttiftkpjqt2tuf.png',
+   'youtube': 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746114335/lidqhayybfxkf5pbjfxg.png',
+   'spotify': 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746114335/jsribordfkvsj4pjnyn1.png',
+}
+
+
+export const controlComponent = ({
+   nameMusic,
+   urlMusic,
+   duration,
+   currentDuration,
+   imageMusic,
+   voiceChannel,
+   quantityInQueue,
+   nameSourceMusic,
+}: Props) => {
 
    const infoMusicEmbed = new EmbedBuilder()
-      .setColor('#0099ff')
-      .setDescription(`\`🎵 ${nameMusic}\``)
+      .setColor('#5865f2')
+      .setTitle(`\`🎵 ${nameMusic}\``)
       .setAuthor({
          name: 'Panel de control',
+         iconURL: nameSourceMusic && imageSocialMusic.hasOwnProperty(nameSourceMusic)
+            ? imageSocialMusic[nameSourceMusic]
+            : undefined
       })
       .addFields(
          {
@@ -39,41 +61,42 @@ export const controlComponent = ({ nameMusic, duration, currentDuration, imageMu
             inline: true
          },
       );
-   console.log({ imageMusic });
-   if (imageMusic && typeof imageMusic === 'string' && imageMusic.startsWith('http')) {
-      infoMusicEmbed.setThumbnail(`${imageMusic}`);
-   }
+
+   if (ValidateUrl.baseHttp(urlMusic)) infoMusicEmbed.setURL(urlMusic!);
+
+
+   if (ValidateUrl.baseHttp(imageMusic)) infoMusicEmbed.setThumbnail(`${imageMusic}`);
 
    const btnBack = new ButtonBuilder()
       .setCustomId(EventButtons.BTN_BACK.name)
       // .setLabel('Atras')
       .setEmoji(EventButtons.BTN_BACK.emoji)
-      .setStyle(ButtonStyle.Secondary);
+      .setStyle(ButtonStyle.Primary);
 
    const btnPause = new ButtonBuilder()
       .setCustomId(EventButtons.BTN_PAUSE.name)
       // .setLabel('Pausar')
       .setEmoji(EventButtons.BTN_PAUSE.emoji)
-      .setStyle(ButtonStyle.Secondary);
+      .setStyle(ButtonStyle.Primary);
 
 
    const btnPass = new ButtonBuilder()
       .setCustomId(EventButtons.BTN_SKIP.name)
       // .setLabel('Adelantar')
       .setEmoji(EventButtons.BTN_SKIP.emoji)
-      .setStyle(ButtonStyle.Secondary);
+      .setStyle(ButtonStyle.Primary);
 
-   const btnPlay = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_PLAY.name)
-      // .setLabel('Play')
-      .setEmoji(EventButtons.BTN_PLAY.emoji)
-      .setStyle(ButtonStyle.Secondary);
+   // const btnPlay = new ButtonBuilder()
+   //    .setCustomId(EventButtons.BTN_PLAY.name)
+   //    // .setLabel('Play')
+   //    .setEmoji(EventButtons.BTN_PLAY.emoji)
+   //    .setStyle(ButtonStyle.Primary);
 
    const btnStop = new ButtonBuilder()
       .setCustomId(EventButtons.BTN_STOP.name)
       // .setLabel('Detener')
       .setEmoji(EventButtons.BTN_STOP.emoji)
-      .setStyle(ButtonStyle.Secondary);
+      .setStyle(ButtonStyle.Danger);
 
    const btnMuteSong = new ButtonBuilder()
       .setCustomId(EventButtons.BTN_MUTESONG.name)
@@ -81,11 +104,11 @@ export const controlComponent = ({ nameMusic, duration, currentDuration, imageMu
       .setEmoji(EventButtons.BTN_MUTESONG.emoji)
       .setStyle(ButtonStyle.Secondary);
 
-   const btnActiveSong = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_ACTIVESONG.name)
-      .setLabel(EventButtons.BTN_ACTIVESONG.label)
-      .setEmoji(EventButtons.BTN_ACTIVESONG.emoji)
-      .setStyle(ButtonStyle.Secondary);
+   // const btnActiveSong = new ButtonBuilder()
+   //    .setCustomId(EventButtons.BTN_ACTIVESONG.name)
+   //    .setLabel(EventButtons.BTN_ACTIVESONG.label)
+   //    .setEmoji(EventButtons.BTN_ACTIVESONG.emoji)
+   //    .setStyle(ButtonStyle.Secondary);
 
    const btnPlaylist = new ButtonBuilder()
       .setCustomId(EventButtons.BTN_PLAYLIST.name)
@@ -96,12 +119,12 @@ export const controlComponent = ({ nameMusic, duration, currentDuration, imageMu
 
    const row1 = new ActionRowBuilder<ButtonBuilder>()
       .addComponents(
-         btnBack, btnPause, btnPass, btnPlay, btnStop
+         btnBack, btnPause, btnPass, btnStop
       );
 
    const row2 = new ActionRowBuilder<ButtonBuilder>()
       .addComponents(
-         btnMuteSong, btnActiveSong, btnPlaylist
+         btnMuteSong, btnPlaylist
       );
 
    return {
