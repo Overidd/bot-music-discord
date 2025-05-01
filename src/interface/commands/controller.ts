@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { CustonInteraction } from '../../doman/types'
-import { controlComponent } from '../../infrastructure/discord';
+import { controlComponent, EmdebComponent } from '../../infrastructure/discord';
 
 
 const options = {
@@ -14,7 +14,14 @@ const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isChatInputCommand()) return;
 
    const queue = interaction?.client?.player?.getQueue(interaction.guildId!);
-   console.log((queue?.songs.length || 1) - 1);
+
+   if (!queue || !queue.playing || queue.songs.length === 0) {
+      return interaction.reply({
+         embeds: [EmdebComponent.emdebError('⛔ No hay música reproduciéndose.')],
+         ephemeral: true
+      })
+   };
+
    const { components, embeds } = controlComponent({
       nameMusic: queue?.songs[0].name,
       duration: queue?.formattedDuration,

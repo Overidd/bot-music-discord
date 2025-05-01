@@ -1,6 +1,5 @@
-import { MessageFlags } from 'discord.js';
 import { CustonInteraction, EventButtons } from '../../doman/types';
-import { EmdebComponent } from '../../infrastructure/discord';
+import { SongService } from '../../application/service';
 
 const options = {
    data: {
@@ -9,29 +8,16 @@ const options = {
 }
 
 const execute = async (interaction: CustonInteraction) => {
-
    if (!interaction.isButton()) return;
-   if (!interaction?.guildId) return
 
-   const queue = interaction?.client?.player?.getQueue(interaction.guildId) as any;
+   const res = await SongService.getInstance()
+      .activeMusic(interaction);
 
-   try {
-      if (!queue?.playing) {
-         await interaction.reply({ content: `\`${EventButtons.BTN_ACTIVESONG.emoji}\``, flags: MessageFlags.Ephemeral });
-         return;
-      }
+   if (!res) return;
 
-      const metadata = queue?.metadata || {}
-
-      await queue.setVolume(metadata.previousVolume ?? 100);
-      await interaction.reply({ content: `\`${EventButtons.BTN_ACTIVESONG.emoji}\``, flags: MessageFlags.Ephemeral });
-
-   } catch (error) {
-      await interaction.reply({
-         embeds: [EmdebComponent.emdebError('Ocurrio un error al pausar la musica')],
-         flags: MessageFlags.Ephemeral
-      })
-   }
+   interaction.reply({
+      ...res.message,
+   });
 }
 
 export const button = {

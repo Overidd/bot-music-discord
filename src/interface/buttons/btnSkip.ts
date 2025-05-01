@@ -1,6 +1,5 @@
-import { MessageFlags } from 'discord.js';
 import { CustonInteraction, EventButtons } from '../../doman/types';
-import { EmdebComponent } from '../../infrastructure/discord';
+import { SongService } from '../../application/service';
 
 const options = {
    data: {
@@ -10,38 +9,15 @@ const options = {
 
 const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
-   if (!interaction.guildId) return;
 
-   const queue = interaction.client?.player?.getQueue(interaction.guildId);
+   const res = await SongService.getInstance()
+      .skip(interaction);
 
-   try {
-      if (!queue || !queue.playing || queue.songs.length === 0) {
-         await interaction.reply({
-            embeds: [EmdebComponent.emdebError('⛔ No hay música reproduciéndose.')],
-            flags: MessageFlags.Ephemeral
-         });
-         return;
-      }
+   if (!res) return;
 
-      if (queue.songs.length <= 1) {
-         await interaction.reply({
-            embeds: [EmdebComponent.emdebError('🚫 No hay más canciones para saltar.')],
-            flags: MessageFlags.Ephemeral
-         });
-         return;
-      }
-
-      await queue.skip();
-      await interaction.reply({
-         content: `${EventButtons.BTN_SKIP.emoji}`,
-         flags: MessageFlags.Ephemeral
-      });
-   } catch (error) {
-      await interaction.reply({
-         embeds: [EmdebComponent.emdebError('Ocurrió un error al saltar la canción.')],
-         flags: MessageFlags.Ephemeral
-      });
-   }
+   interaction.reply({
+      ...res.message,
+   });
 };
 
 export const button = {
