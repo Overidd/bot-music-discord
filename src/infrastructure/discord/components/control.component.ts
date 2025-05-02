@@ -1,17 +1,28 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
-import { EventButtons } from '../../../doman/types';
+import { dataButtons, EventButtons } from '../../../doman/types';
 import { ValidateUrl } from '../../../utils';
+import { ButtonComponent } from './button.component';
 
-interface Props {
+interface ICreateEmdeb {
    nameMusic?: string,
-   urlMusic?: string,
-   duration?: string,
-   currentDuration?: string,
-   imageMusic?: string,
-   voiceChannel?: string,
-   quantityInQueue?: string,
    nameSourceMusic?: string,
+   currentDuration?: string,
+   duration?: string,
    volumen?: string,
+   quantityInQueue?: string,
+   urlMusic?: string,
+   imageMusic?: string,
+}
+
+interface ICreateButtons {
+   isActiveSong: boolean,
+   isMuteSong: boolean,
+   isPause?: boolean,
+   isResume?: boolean,
+}
+
+interface Props extends ICreateEmdeb {
+   voiceChannel?: string,
 }
 
 const imageSocialMusic: { [key: string]: string } = {
@@ -20,6 +31,213 @@ const imageSocialMusic: { [key: string]: string } = {
    'spotify': 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746114335/jsribordfkvsj4pjnyn1.png',
 }
 
+export class ControlComponent {
+
+   static createEmdeb({
+      nameMusic,
+      nameSourceMusic,
+      currentDuration,
+      duration,
+      volumen,
+      quantityInQueue,
+      urlMusic,
+      imageMusic,
+   }: ICreateEmdeb) {
+      const infoMusicEmbed = new EmbedBuilder()
+         .setColor('#5865f2')
+         .setTitle(`\`🎵 ${nameMusic}\``)
+         .setAuthor({
+            name: 'Panel de control',
+            iconURL: nameSourceMusic && imageSocialMusic.hasOwnProperty(nameSourceMusic)
+               ? imageSocialMusic[nameSourceMusic]
+               : undefined
+         })
+         .addFields(
+            {
+               name: '\u200B',
+               value: '\u200B'
+            },
+            {
+               name: `⏱️ Duracion`,
+               value: `\`${currentDuration} / ${duration}\``,
+               inline: true,
+            },
+            {
+               name: '🔊 Volumen',
+               value: `\`   ${volumen}%   \``,
+               inline: true
+            },
+            {
+               name: '📃 En cola',
+               value: `\`   ${quantityInQueue}   \``,
+               inline: true
+            },
+         );
+
+      if (ValidateUrl.baseHttp(urlMusic)) infoMusicEmbed.setURL(urlMusic!);
+
+
+      if (ValidateUrl.baseHttp(imageMusic)) infoMusicEmbed.setThumbnail(`${imageMusic}`);
+
+      return infoMusicEmbed
+   }
+
+   static createButtons(data?: ICreateButtons) {
+      const buttons = new Set()
+
+      if (!data) {
+         const btns = dataButtons.filter(item => {
+            return [EventButtons.BTN_PLAY.name, EventButtons.BTN_ACTIVESONG.name].includes(item.name) ? false : true;
+         })
+
+         for (const { emoji, label, name, style } of btns) {
+            const btn = new ButtonBuilder()
+               .setCustomId(name)
+               .setEmoji(emoji)
+               .setStyle(style as any);
+
+            if (label) {
+               btn.setLabel(label)
+            }
+            buttons.add(btn)
+         }
+
+         return buttons
+      }
+
+      for (const { emoji, label, name, style } of dataButtons) {
+
+         if (name === EventButtons.BTN_PAUSE.name && !!data.isPause) {
+            continue
+         }
+
+         if (name === EventButtons.BTN_PLAY.name && !!data.isResume) {
+            continue
+         }
+
+         if (name === EventButtons.BTN_MUTESONG.name && !!data.isMuteSong) {
+            continue
+         }
+
+         if (name === EventButtons.BTN_ACTIVESONG.name && !!data.isActiveSong) {
+            continue
+         }
+
+         const btn = new ButtonBuilder()
+            .setCustomId(name)
+            // .setLabel('Atras')
+            .setEmoji(emoji)
+            .setStyle(style as any);
+
+         if (label) {
+            btn.setLabel(label)
+         }
+
+         buttons.add(btn)
+      }
+
+      return buttons
+   }
+
+   static createDefault(data: Props) {
+      const infoMusicEmbed = this.createEmdeb({ ...data })
+      const buttons = this.createButtons()
+      const rows = []
+
+      let row = new ActionRowBuilder<ButtonBuilder>();
+      rows.push(row)
+
+      Array.from(buttons).forEach((item, index) => {
+         if ((index + 1) % 5 === 0) {
+            row = new ActionRowBuilder<ButtonBuilder>();
+            // if (index + 1 === buttons.size) return;
+            rows.push(row);
+         }
+
+         row.addComponents(item as any);
+      });
+
+      return {
+         embeds: [infoMusicEmbed],
+         components: [...rows],
+      }
+   }
+
+   static createWithState(data: Props, dataButton: ICreateButtons) {
+      const infoMusicEmbed = this.createEmdeb({ ...data })
+      const buttons = this.createButtons(dataButton)
+      const rows = []
+
+      let row = new ActionRowBuilder<ButtonBuilder>();
+      rows.push(row)
+
+      Array.from(buttons).forEach((item, index) => {
+         if ((index + 1) % 5 === 0) {
+            row = new ActionRowBuilder<ButtonBuilder>();
+            // if (index + 1 === buttons.size)
+            rows.push(row);
+         }
+
+         row.addComponents(item as any);
+      });
+
+      return {
+         embeds: [infoMusicEmbed],
+         components: [...rows],
+      }
+   }
+
+   static updateToButtons(components: Array<ButtonBuilder | any>) {
+      const row = new ActionRowBuilder<ButtonBuilder>()
+      components.forEach(item => {
+         row.addComponents(item)
+      })
+      return row
+   }
+
+   static updateToPlaying(components: Array<ButtonBuilder | any>) {
+      const row = new ActionRowBuilder<ButtonBuilder>()
+      components.forEach(item => {
+         if (item?.data?.custom_id !== EventButtons.BTN_PAUSE.name) {
+            row.addComponents(item)
+            return
+         }
+         row.addComponents(ButtonComponent.basic(EventButtons.BTN_PLAY))
+      })
+      return row
+   }
+
+   static updateToPause(components: Array<ButtonBuilder | any>) {
+      const row = new ActionRowBuilder<ButtonBuilder>()
+      components.map(item => {
+         if (item?.data?.custom_id !== EventButtons.BTN_PLAY.name) {
+            row.addComponents(item)
+            return
+         }
+         row.addComponents(ButtonComponent.basic(EventButtons.BTN_PAUSE))
+      })
+      return row
+   }
+
+   static updateToMuteSong(components: Array<ButtonBuilder | any>) {
+      return components.map(item => {
+         if (item?.data?.custom_id !== EventButtons.BTN_MUTESONG.name) {
+            return item
+         }
+         return ButtonComponent.basic(EventButtons.BTN_MUTESONG)
+      })
+   }
+
+   static updateToActiveSong(components: Array<ButtonBuilder | any>) {
+      return components.map(item => {
+         if (item?.data?.custom_id !== EventButtons.BTN_ACTIVESONG.name) {
+            return item
+         }
+         return ButtonComponent.basic(EventButtons.BTN_ACTIVESONG)
+      })
+   }
+
+}
 
 export const controlComponent = ({
    nameMusic,
@@ -55,11 +273,6 @@ export const controlComponent = ({
          {
             name: '🔊 Volumen',
             value: `\`   ${volumen}%   \``,
-            inline: true
-         },
-         {
-            name: '🎧 Canal de voz',
-            value: `\`   ${voiceChannel}   \``,
             inline: true
          },
          {
@@ -111,11 +324,11 @@ export const controlComponent = ({
       .setEmoji(EventButtons.BTN_MUTESONG.emoji)
       .setStyle(ButtonStyle.Secondary);
 
-   // const btnActiveSong = new ButtonBuilder()
-   //    .setCustomId(EventButtons.BTN_ACTIVESONG.name)
-   //    .setLabel(EventButtons.BTN_ACTIVESONG.label)
-   //    .setEmoji(EventButtons.BTN_ACTIVESONG.emoji)
-   //    .setStyle(ButtonStyle.Secondary);
+   const btnActiveSong = new ButtonBuilder()
+      .setCustomId(EventButtons.BTN_ACTIVESONG.name)
+      .setLabel(EventButtons.BTN_ACTIVESONG.label)
+      .setEmoji(EventButtons.BTN_ACTIVESONG.emoji)
+      .setStyle(ButtonStyle.Secondary);
 
    const btnPlaylist = new ButtonBuilder()
       .setCustomId(EventButtons.BTN_PLAYLIST.name)
@@ -131,7 +344,7 @@ export const controlComponent = ({
 
    const row2 = new ActionRowBuilder<ButtonBuilder>()
       .addComponents(
-         btnMuteSong, btnPlaylist
+         btnMuteSong, btnActiveSong, btnPlaylist
       );
 
    return {

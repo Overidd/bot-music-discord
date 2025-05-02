@@ -1,5 +1,5 @@
-import { Client } from 'discord.js';
 import { DisTube, DisTubeOptions, DisTubePlugin } from 'distube';
+import { Client } from 'discord.js';
 
 interface IDistubeClient {
    client: Client<boolean>,
@@ -7,7 +7,8 @@ interface IDistubeClient {
    plugins: DisTubePlugin[]
 }
 
-export class DistubeClient extends DisTube {
+export class ClientDistube extends DisTube {
+
    constructor({ client, ffmpegPath, plugins }: IDistubeClient) {
       const distubeOptions: DisTubeOptions = {
          emitNewSongOnly: true,

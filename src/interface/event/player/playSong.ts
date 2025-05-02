@@ -1,5 +1,6 @@
 import { Events, Queue, Song } from 'distube'
-import { ClientDiscord, controlComponent, EmdebComponent } from '../../../infrastructure/discord'
+import { ClientDiscord, ControlComponent, controlComponent, EmdebComponent } from '../../../infrastructure/discord'
+import { ControlPanelStatus } from '../../../application/handler/controlPanel'
 
 const options = {
    name: Events.PLAY_SONG,
@@ -10,10 +11,9 @@ const options = {
 const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
 
    //TODO: puede ser que pordiramos obtener el idioma del servidor
-   if (queue.songs.length > 1) return;
 
    try {
-      const { components, embeds } = controlComponent({
+      const { components, embeds } = ControlComponent.createDefault({
          volumen: String(queue.volume),
          nameMusic: song?.name,
          urlMusic: song.url,
@@ -28,12 +28,28 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
       const sentMessage = await queue.textChannel?.send({
          embeds,
          components,
-      }) as { delete: any };
+      }) as any;
 
-      const timeout = setTimeout(() => {
-         sentMessage.delete().catch(console.error);
-         clearTimeout(timeout)
-      }, 60 * 1000 * 7)
+      for (const element of sentMessage?.components[0]?.components) {
+         console.log(element.data);
+      }
+
+      ControlPanelStatus.create(client, {
+         guildId: queue.textChannel?.guildId!,
+         autorUserId: queue.client.user?.id,
+         channelId: queue.textChannel?.id!,
+         isActiveSong: queue.volume > 0,
+         isMuteSong: queue.volume <= 0,
+         isPause: queue.paused,
+         isResume: queue.paused,
+         volumen: queue.volume,
+         controlPanel: sentMessage!
+      })
+
+      // const timeout = setTimeout(() => {
+      //    sentMessage.delete().catch(console.error);
+      //    clearTimeout(timeout)
+      // }, 60 * 1000 * 7)
 
    } catch (error) {
       const sentMessage = await queue.textChannel?.send({
@@ -51,5 +67,3 @@ export const event = {
    ...options,
    execute
 }
-
-

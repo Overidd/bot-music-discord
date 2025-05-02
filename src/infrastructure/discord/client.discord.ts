@@ -1,12 +1,15 @@
 import { Client, Collection, GatewayIntentBits } from 'discord.js'
-import { IButton, ICommand, IConfigBot } from '../../doman/types';
-import DisTube, { DisTubeEvents } from 'distube'
+import { IButton, ICommand, IConfigBot, IControlPanelStatus } from '../../doman/types';
+import { ClientDistube } from './client.distube.';
+import { DisTubeEvents } from 'distube'
 
 export class ClientDiscord extends Client {
    public config?: IConfigBot;
-   public player?: DisTube;
+   public player?: ClientDistube;
    public commands: Collection<string, ICommand> = new Collection();
    public buttons: Collection<string, IButton> = new Collection();
+   public controlPanelStatus: Collection<string, IControlPanelStatus> = new Collection()
+   
    public language?: string;
 
    constructor() {
@@ -33,7 +36,7 @@ export class ClientDiscord extends Client {
       return this;
    }
 
-   public setPlayer(player: DisTube): this {
+   public setPlayer(player: ClientDistube): this {
       this.player = player;
       return this;
    }

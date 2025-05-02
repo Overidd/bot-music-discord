@@ -40,37 +40,37 @@ const execute = async (interaction: CustonInteraction) => {
       flags: MessageFlags.Ephemeral  // ✅ correcta forma moderna
    });
 
-   const isQueue = interaction.client.player?.queues.has(interaction.guildId!);
+   // const isQueue = interaction.client.player?.queues.has(interaction.guildId!);  
 
-   const queue = interaction.client.player?.queues.get(interaction.guildId!);
+   // const queue = interaction.client.player?.queues.get(interaction.guildId!);
 
-   console.log({ isQueue, queue });
+   // console.log({ isQueue, queue });
 
-   let embed: EmbedBuilder | undefined;
+   // let embed: EmbedBuilder | undefined;
 
-   if (!isQueue && !queue?.playing) {
-      embed = new EmbedBuilder()
-         .setAuthor({
-            name: interaction.user.globalName || interaction.user.username,
-            iconURL: interaction.user.displayAvatarURL()
-         })
+   // if (!isQueue && !queue?.playing) {
+   //    embed = new EmbedBuilder()
+   //       .setAuthor({
+   //          name: interaction.user.globalName || interaction.user.username,
+   //          iconURL: interaction.user.displayAvatarURL()
+   //       })
 
-         .setColor('#0099ff')
-         .setDescription(`\`Vamos a ponerle ritmo a esto: 🔎 buscando\``)
-   } else {
-      // Componente Embeds
-      embed = new EmbedBuilder()
-         .setAuthor({
-            name: interaction.user.globalName || interaction.user.username,
-            iconURL: interaction.user.displayAvatarURL()
-         })
-         .setColor('#0099ff')
-         .setDescription(`\`Que siga sonado: 🔎 buscando\``)
-   }
+   //       .setColor('#0099ff')
+   //       .setDescription(`\`Vamos a ponerle ritmo a esto: 🔎 buscando\``)
+   // } else {
+   //    // Componente Embeds
+   //    embed = new EmbedBuilder()
+   //       .setAuthor({
+   //          name: interaction.user.globalName || interaction.user.username,
+   //          iconURL: interaction.user.displayAvatarURL()
+   //       })
+   //       .setColor('#0099ff')
+   //       .setDescription(`\`Que siga sonado: 🔎 buscando\``)
+   // }
 
-   await interaction.editReply({
-      embeds: [embed],
-   });
+   // await interaction.editReply({
+   // embeds: [embed],
+   // });
 
    const textChannel = interaction.channel as GuildTextBasedChannel | null;
 
@@ -79,21 +79,20 @@ const execute = async (interaction: CustonInteraction) => {
    }
 
    try {
+
+
       const transaccion = await interaction.client.player?.play(
          voiceChannel,
          query, {
          member: interaction.member,
          textChannel: textChannel,
-         metadata: {
-            previousVolume: 50, // volumen inicial por defecto
-         }
       });
 
       console.log({ transaccion });
 
       const queue = interaction?.client?.player?.getQueue(interaction.guildId!);
 
-      embed = new EmbedBuilder()
+      const embed = new EmbedBuilder()
          .setAuthor({
             name: interaction.user.globalName || interaction.user.username,
             iconURL: interaction.user.displayAvatarURL()

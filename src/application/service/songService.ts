@@ -5,6 +5,7 @@ import { CustonInteraction, EventButtons } from '../../doman/types';
 
 interface ISendMessage {
    error: boolean;
+   fetchReply: true,
    message: {
       embeds?: any;
       content?: string;
@@ -35,7 +36,8 @@ export class SongService {
          message: {
             ...(embeds ? { embeds } : { content }),
             flags: MessageFlags.Ephemeral
-         }
+         },
+         fetchReply: true
       }
    }
 
@@ -195,7 +197,7 @@ export class SongService {
 
       try {
          const queue = interaction.client?.player?.getQueue(interaction.guildId!) as any;
-
+         // queue?.volume
          const error = this.validate(queue);
 
          if (error) return this.sendMessage({ embeds: [error], isError: true });
@@ -238,11 +240,6 @@ export class SongService {
                isError: false
             })
          }
-
-         const metadata = queue?.metadata || {}
-         metadata.previousVolume = queue?.volume || 40;
-         console.log('metadata.previousVolume', metadata.previousVolume);
-
          await queue.setVolume(0);
          return this.sendMessage({
             content: `\`${EventButtons.BTN_MUTESONG.emoji}\``,

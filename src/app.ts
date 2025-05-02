@@ -2,13 +2,13 @@ import ffmpegPath from '@ffmpeg-installer/ffmpeg';
 import { YtDlpPlugin } from '@distube/yt-dlp';
 import { SpotifyPlugin } from '@distube/spotify';
 import { SoundCloudPlugin } from '@distube/soundcloud';
-import { ClientDiscord, DistubeClient } from './infrastructure/discord';
+import { ClientDiscord, ClientDistube } from './infrastructure/discord';
 import { InteractionFileLoader, EventFileLoader } from './infrastructure/fileLoader';
 import { configBot } from './config';
 
 const main = async () => {
    const client = new ClientDiscord();
-   const distube = new DistubeClient({
+   const distube = new ClientDistube({
       client,
       ffmpegPath: ffmpegPath.path,
       plugins: [
