@@ -1,5 +1,7 @@
 import { CustonInteraction, EventButtons } from '../../doman/types';
 import { SongService } from '../../application/service';
+import { ControlComponent } from '../../infrastructure/discord';
+import { ControlPanelStatus } from '../../application/handler/controlPanel';
 
 const options = {
    data: {
@@ -14,6 +16,16 @@ const execute = async (interaction: CustonInteraction) => {
       .activeMusic(interaction);
 
    if (!res) return;
+
+   const control = ControlPanelStatus.edit(interaction.client, interaction.guildId!)
+
+   const row1 = ControlComponent.buildRows(control?.controlPanel?.components[0].components || [])
+   const row2 = ControlComponent.updateToMuteSong(control?.controlPanel?.components[1].components || [])
+
+   control?.controlPanel.edit({
+      embeds: control?.controlPanel.embeds,
+      components: [...row1, row2]
+   })
 
    interaction.reply({
       ...res.message,

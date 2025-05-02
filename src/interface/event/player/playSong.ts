@@ -30,9 +30,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
          components,
       }) as any;
 
-      for (const element of sentMessage?.components[0]?.components) {
-         console.log(element.data);
-      }
+      ControlPanelStatus.delete(client, queue.textChannel?.guildId!)
 
       ControlPanelStatus.create(client, {
          guildId: queue.textChannel?.guildId!,

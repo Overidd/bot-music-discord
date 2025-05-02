@@ -20,14 +20,12 @@ const execute = async (interaction: CustonInteraction) => {
    const control = ControlPanelStatus.edit(interaction.client, interaction.guildId!)
 
    const row1 = ControlComponent.updateToPause(control?.controlPanel?.components[0].components || [])
-   const row2 = ControlComponent.updateToButtons(control?.controlPanel?.components[1].components || [])
+   const row2 = ControlComponent.buildRows(control?.controlPanel?.components[1].components || [])
 
-   console.log('BTN_PLAY', row1, row2);
    control?.controlPanel.edit({
       embeds: control?.controlPanel.embeds,
-      components: [row1, row2],
+      components: [row1, ...row2],
    })
-
 
    interaction.reply({
       ...res.message,

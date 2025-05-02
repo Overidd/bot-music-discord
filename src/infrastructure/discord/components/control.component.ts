@@ -33,7 +33,7 @@ const imageSocialMusic: { [key: string]: string } = {
 
 export class ControlComponent {
 
-   static createEmdeb({
+   static createEmbed({
       nameMusic,
       nameSourceMusic,
       currentDuration,
@@ -59,7 +59,7 @@ export class ControlComponent {
             },
             {
                name: `⏱️ Duracion`,
-               value: `\`${currentDuration} / ${duration}\``,
+               value: `\`   ${duration}   \``,
                inline: true,
             },
             {
@@ -96,9 +96,8 @@ export class ControlComponent {
                .setEmoji(emoji)
                .setStyle(style as any);
 
-            if (label) {
-               btn.setLabel(label)
-            }
+            label && btn.setLabel(label);
+
             buttons.add(btn)
          }
 
@@ -106,32 +105,17 @@ export class ControlComponent {
       }
 
       for (const { emoji, label, name, style } of dataButtons) {
-
-         if (name === EventButtons.BTN_PAUSE.name && !!data.isPause) {
-            continue
-         }
-
-         if (name === EventButtons.BTN_PLAY.name && !!data.isResume) {
-            continue
-         }
-
-         if (name === EventButtons.BTN_MUTESONG.name && !!data.isMuteSong) {
-            continue
-         }
-
-         if (name === EventButtons.BTN_ACTIVESONG.name && !!data.isActiveSong) {
-            continue
-         }
+         if (name === EventButtons.BTN_PAUSE.name && !!data.isPause) continue;
+         if (name === EventButtons.BTN_PLAY.name && !!data.isResume) continue;
+         if (name === EventButtons.BTN_MUTESONG.name && !!data.isMuteSong) continue;
+         if (name === EventButtons.BTN_ACTIVESONG.name && !!data.isActiveSong) continue;
 
          const btn = new ButtonBuilder()
             .setCustomId(name)
             // .setLabel('Atras')
             .setEmoji(emoji)
             .setStyle(style as any);
-
-         if (label) {
-            btn.setLabel(label)
-         }
+         label && btn.setLabel(label);
 
          buttons.add(btn)
       }
@@ -139,104 +123,71 @@ export class ControlComponent {
       return buttons
    }
 
-   static createDefault(data: Props) {
-      const infoMusicEmbed = this.createEmdeb({ ...data })
-      const buttons = this.createButtons()
-      const rows = []
-
+   static buildRows(buttons: Set<ButtonBuilder>) {
+      const rows: ActionRowBuilder<ButtonBuilder>[] = [];
       let row = new ActionRowBuilder<ButtonBuilder>();
-      rows.push(row)
+      rows.push(row);
 
       Array.from(buttons).forEach((item, index) => {
          if ((index + 1) % 5 === 0) {
             row = new ActionRowBuilder<ButtonBuilder>();
-            // if (index + 1 === buttons.size) return;
             rows.push(row);
          }
-
-         row.addComponents(item as any);
+         row.addComponents(item);
       });
 
+      return rows;
+   }
+
+   static createDefault(data: Props) {
+      const infoMusicEmbed = this.createEmbed(data);
+      const buttons = this.createButtons();
       return {
          embeds: [infoMusicEmbed],
-         components: [...rows],
-      }
+         components: this.buildRows(buttons as any),
+      };
    }
 
    static createWithState(data: Props, dataButton: ICreateButtons) {
-      const infoMusicEmbed = this.createEmdeb({ ...data })
-      const buttons = this.createButtons(dataButton)
-      const rows = []
-
-      let row = new ActionRowBuilder<ButtonBuilder>();
-      rows.push(row)
-
-      Array.from(buttons).forEach((item, index) => {
-         if ((index + 1) % 5 === 0) {
-            row = new ActionRowBuilder<ButtonBuilder>();
-            // if (index + 1 === buttons.size)
-            rows.push(row);
-         }
-
-         row.addComponents(item as any);
-      });
-
+      const infoMusicEmbed = this.createEmbed(data);
+      const buttons = this.createButtons(dataButton);
       return {
          embeds: [infoMusicEmbed],
-         components: [...rows],
-      }
+         components: this.buildRows(buttons as any),
+      };
    }
 
-   static updateToButtons(components: Array<ButtonBuilder | any>) {
-      const row = new ActionRowBuilder<ButtonBuilder>()
+   static updateButton(
+      components: any[],
+      targetName: string,
+      replacement: ButtonBuilder
+   ) {
+      const row = new ActionRowBuilder<ButtonBuilder>();
       components.forEach(item => {
-         row.addComponents(item)
-      })
-      return row
+         if (item?.data?.custom_id === targetName) {
+            row.addComponents(replacement);
+         } else {
+            row.addComponents(item);
+         }
+      });
+      return row;
    }
 
-   static updateToPlaying(components: Array<ButtonBuilder | any>) {
-      const row = new ActionRowBuilder<ButtonBuilder>()
-      components.forEach(item => {
-         if (item?.data?.custom_id !== EventButtons.BTN_PAUSE.name) {
-            row.addComponents(item)
-            return
-         }
-         row.addComponents(ButtonComponent.basic(EventButtons.BTN_PLAY))
-      })
-      return row
+   static updateToPause(components: ButtonBuilder[]) {
+      return this.updateButton(components, EventButtons.BTN_PLAY.name, ButtonComponent.basic(EventButtons.BTN_PAUSE));
    }
 
-   static updateToPause(components: Array<ButtonBuilder | any>) {
-      const row = new ActionRowBuilder<ButtonBuilder>()
-      components.map(item => {
-         if (item?.data?.custom_id !== EventButtons.BTN_PLAY.name) {
-            row.addComponents(item)
-            return
-         }
-         row.addComponents(ButtonComponent.basic(EventButtons.BTN_PAUSE))
-      })
-      return row
+   static updateToPlaying(components: ButtonBuilder[]) {
+      return this.updateButton(components, EventButtons.BTN_PAUSE.name, ButtonComponent.basic(EventButtons.BTN_PLAY));
    }
 
    static updateToMuteSong(components: Array<ButtonBuilder | any>) {
-      return components.map(item => {
-         if (item?.data?.custom_id !== EventButtons.BTN_MUTESONG.name) {
-            return item
-         }
-         return ButtonComponent.basic(EventButtons.BTN_MUTESONG)
-      })
+      return this.updateButton(components, EventButtons.BTN_ACTIVESONG.name, ButtonComponent.basic(EventButtons.BTN_MUTESONG));
    }
 
    static updateToActiveSong(components: Array<ButtonBuilder | any>) {
-      return components.map(item => {
-         if (item?.data?.custom_id !== EventButtons.BTN_ACTIVESONG.name) {
-            return item
-         }
-         return ButtonComponent.basic(EventButtons.BTN_ACTIVESONG)
-      })
+      return this.updateButton(components, EventButtons.BTN_MUTESONG.name, ButtonComponent.basic(EventButtons.BTN_ACTIVESONG))
    }
-
 }
 
 export const controlComponent = ({
