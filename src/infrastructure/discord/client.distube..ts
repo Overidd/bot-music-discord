@@ -2,26 +2,27 @@ import { DisTube, DisTubeOptions, DisTubePlugin, PlayOptions } from 'distube';
 import { Client, VoiceChannel, TextChannel, GuildMember } from 'discord.js';
 import { getVoiceConnection } from '@discordjs/voice';
 import { ChildProcess, spawn } from 'child_process';
-import { YtDlpPlugin } from '@distube/yt-dlp';
+// import { YtDlpPlugin } from '@distube/yt-dlp';
+// import { YouTubePlugin } from '@distube/youtube';
 
 interface IDistubeClient {
    client: Client<boolean>;
    ffmpegPath: string;
-   plugins: DisTubePlugin[];
+   plugins: any[];
 }
 
 // Variable compartida para el último proceso
 let lastYtdlpProc: ChildProcess | null = null;
 
-// Patch del plugin
-const ytDlpPlugin = new YtDlpPlugin({ update: false });
-const originalSpawn = (ytDlpPlugin as any)._spawn as (args: string[]) => ChildProcess;
+// // Patch del plugin
+// const ytDlpPlugin = new YtDlpPlugin({ update: false });
+// const originalSpawn = (ytDlpPlugin as any)._spawn as (args: string[]) => ChildProcess;
 
-; (ytDlpPlugin as any)._spawn = function (this: any, args: string[]) {
-   const proc = originalSpawn.call(this, args);
-   lastYtdlpProc = proc;
-   return proc;
-};
+// ; (ytDlpPlugin as any)._spawn = function (this: any, args: string[]) {
+//    const proc = originalSpawn.call(this, args);
+//    lastYtdlpProc = proc;
+//    return proc;
+// };
 
 export class ClientDistube extends DisTube {
    constructor({ client, ffmpegPath, plugins }: IDistubeClient) {
@@ -30,7 +31,7 @@ export class ClientDistube extends DisTube {
          emitAddSongWhenCreatingQueue: false,
          emitAddListWhenCreatingQueue: false,
          ffmpeg: { path: ffmpegPath },
-         plugins: [...plugins, ytDlpPlugin],
+         plugins: plugins,
       };
       super(client, opts);
    }

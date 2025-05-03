@@ -4,6 +4,7 @@ import { SoundCloudPlugin } from '@distube/soundcloud';
 import { ClientDiscord, ClientDistube } from './infrastructure/discord';
 import { InteractionFileLoader, EventFileLoader } from './infrastructure/fileLoader';
 import { configBot } from './config';
+import { YtDlpPlugin } from '@distube/yt-dlp';
 
 const main = async () => {
 
@@ -14,6 +15,7 @@ const main = async () => {
       plugins: [
          new SpotifyPlugin(),
          new SoundCloudPlugin(),
+         new YtDlpPlugin({ update: true })
       ]
    });
 
@@ -39,8 +41,6 @@ const main = async () => {
 
 
 // main.ts (o donde instancies Distube)
-
-
 
 /**
  📋 Propiedades comunes de Queue:
