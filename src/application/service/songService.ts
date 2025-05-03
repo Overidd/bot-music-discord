@@ -209,9 +209,8 @@ export class SongService {
             })
          }
 
-         const metadata = queue?.metadata || {}
-         console.log('metadata.previousVolume', metadata);
-         await queue.setVolume(metadata.previousVolume ?? 50);
+         await queue.setVolume(50);
+         
          return this.sendMessage({
             content: `\`${EventButtons.BTN_ACTIVESONG.emoji}\``,
             isError: false
