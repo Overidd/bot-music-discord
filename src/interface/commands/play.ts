@@ -1,7 +1,7 @@
-import { SlashCommandBuilder, GuildMember, GuildTextBasedChannel, EmbedBuilder, MessageFlags } from 'discord.js';
+import { SlashCommandBuilder, GuildTextBasedChannel, EmbedBuilder, MessageFlags } from 'discord.js';
 import { CustonInteraction } from '../../doman/types';
-import { getVoiceConnection } from '@discordjs/voice';
 import { DisTubeError } from 'distube';
+import { EmdebComponent } from '../../infrastructure/discord';
 
 const options = {
    data: new SlashCommandBuilder()
@@ -17,7 +17,6 @@ const options = {
 
 const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isChatInputCommand()) return;
-
 
    const voiceChannel = interaction.member.voice.channel;
 
@@ -40,38 +39,6 @@ const execute = async (interaction: CustonInteraction) => {
       flags: MessageFlags.Ephemeral  // ✅ correcta forma moderna
    });
 
-   // const isQueue = interaction.client.player?.queues.has(interaction.guildId!);  
-
-   // const queue = interaction.client.player?.queues.get(interaction.guildId!);
-
-   // console.log({ isQueue, queue });
-
-   // let embed: EmbedBuilder | undefined;
-
-   // if (!isQueue && !queue?.playing) {
-   //    embed = new EmbedBuilder()
-   //       .setAuthor({
-   //          name: interaction.user.globalName || interaction.user.username,
-   //          iconURL: interaction.user.displayAvatarURL()
-   //       })
-
-   //       .setColor('#0099ff')
-   //       .setDescription(`\`Vamos a ponerle ritmo a esto: 🔎 buscando\``)
-   // } else {
-   //    // Componente Embeds
-   //    embed = new EmbedBuilder()
-   //       .setAuthor({
-   //          name: interaction.user.globalName || interaction.user.username,
-   //          iconURL: interaction.user.displayAvatarURL()
-   //       })
-   //       .setColor('#0099ff')
-   //       .setDescription(`\`Que siga sonado: 🔎 buscando\``)
-   // }
-
-   // await interaction.editReply({
-   // embeds: [embed],
-   // });
-
    const textChannel = interaction.channel as GuildTextBasedChannel | null;
 
    if (!textChannel) {
@@ -80,17 +47,19 @@ const execute = async (interaction: CustonInteraction) => {
 
    try {
 
+      const playPromise = await interaction.client.player!.playWithTimeout(
+         voiceChannel as any,
+         query,
+         {
+            member: interaction.member,
+            textChannel: textChannel as any,
+            metadata: interaction,
+         }
+      );
 
-      const transaccion = await interaction.client.player?.play(
-         voiceChannel,
-         query, {
-         member: interaction.member,
-         textChannel: textChannel,
-      });
+      const queue = interaction.client.player?.getQueue(interaction.guildId!);
 
-      console.log({ transaccion });
-
-      const queue = interaction?.client?.player?.getQueue(interaction.guildId!);
+      console.log({ playPromise });
 
       const embed = new EmbedBuilder()
          .setAuthor({
@@ -98,22 +67,23 @@ const execute = async (interaction: CustonInteraction) => {
             iconURL: interaction.user.displayAvatarURL()
          })
          .setColor('#0099ff')
-         .setDescription(`Musica encontrada: \`${queue?.songs.at(-1)?.name}\` ⏱️ [${queue?.songs.at(-1)?.formattedDuration}]`)
+         .setDescription(`🎶 Música encontrada: \`${queue?.songs.at(-1)?.name}\` ⏱️ [${queue?.songs.at(-1)?.formattedDuration}]`);
 
       await interaction.editReply({
          embeds: [embed],
-      })
+      });
+
 
    } catch (error) {
       console.error(error);
-
       if (error instanceof DisTubeError && error?.errorCode === 'NO_RESULT') {
 
-         // interaction.editReply(`❌ No se encontraron resultados para: **${query}**`);
          interaction.client.player?.emit('notResult' as any, interaction, textChannel, error);
          return
       }
-      interaction.editReply('Ocurrió un error');
+      interaction.editReply({
+         embeds: [EmdebComponent.emdebError(`❌ Ocurrió un error al buscar la música`)],
+      });
    }
 };
 
@@ -152,3 +122,40 @@ export const command = {
 //       interaction.reply('❌ Ocurrió un error al validar la playlist.');
 //    }
 // }
+
+
+const playWithTimeout = async () => {
+
+   // // 1. Creamos un timeout que rechaza en 20 s
+   // const timeoutPromise = new Promise<never>((_, reject) =>
+   //    setTimeout(() => reject(new Error('TIMEOUT_NO_RESULT')), 20_000)
+   // );
+
+   // // 2. Promise.race para ver cuál termina primero
+   // try {
+   //    await Promise.race([playPromise, timeoutPromise]);
+   //    // Si llegamos aquí, play() arrancó correctamente
+   // } catch (err) {
+   //    // Si vence el timeout o hay error, destruimos la conexión
+   //    const conn = getVoiceConnection(interaction.guildId!);
+   //    if (conn) conn.destroy(); // desconecta y limpia :contentReference[oaicite:1]{index=1}
+   //    // Opcional: limpia la cola de Distube
+   //    interaction.client.player!.stop(interaction.guildId!); // detiene y vacía cola :contentReference[oaicite:2]{index=2}
+
+   //    if ((err as Error).message === 'TIMEOUT_NO_RESULT') {
+   //       return interaction.editReply('⚠️ No se encontró música en 20 s.');
+   //    }
+   //    throw err;
+   // }
+};
+
+// await playWithTimeout()
+// const foundMusic = await Promise.race([
+//    interaction.client.player?.play(voiceChannel, query, {
+//       member: interaction.member,
+//       textChannel: textChannel,
+//    }),
+//    new Promise((_, reject) =>
+//       setTimeout(() => reject(new Error('TIMEOUT_NO_RESULT')), 20_000)
+//    ),
+// ]);
