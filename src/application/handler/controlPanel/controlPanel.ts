@@ -1,7 +1,7 @@
 import { ClientDiscord } from '../../../infrastructure/discord';
 import { IControlPanelStatus } from '../../../doman/types';
 
-export class ControlPanelStatus {
+export class PanelStatusHandler {
    static create(client: ClientDiscord, data: IControlPanelStatus) {
 
       if (client.controlPanelStatus.has(data.guildId)) return;
@@ -39,10 +39,14 @@ export class ControlPanelStatus {
       client.controlPanelStatus.delete(guildId)
    }
 
-   static edit(client: ClientDiscord, guildId: string) {
+   static edit(client: ClientDiscord, guildId: string): IControlPanelStatus {
       if (!guildId) {
          throw new Error('No implement guildId')
       }
-      return client.controlPanelStatus.get(guildId)
+      if (!client.controlPanelStatus.has(guildId)) {
+         throw new Error('No implement controlPanelStatus')
+      }
+
+      return client.controlPanelStatus.get(guildId)!
    }
 }
