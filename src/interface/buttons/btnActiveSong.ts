@@ -1,7 +1,7 @@
 import { CustonInteraction, EventButtons } from '../../doman/types';
 import { SongService } from '../../application/service';
-import { ControlComponent } from '../../infrastructure/discord';
-import { ControlPanelStatus } from '../../application/handler/controlPanel';
+import { PanelStatusComponent } from '../../infrastructure/discord';
+import { PanelStatusHandler } from '../../application/handler/controlPanel';
 
 const options = {
    data: {
@@ -12,24 +12,40 @@ const options = {
 const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
 
-   const res = await SongService.getInstance()
-      .activeMusic(interaction);
+   try {
+      const res = await SongService.getInstance()
+         .activeMusic(interaction);
 
-   if (!res) return;
+      if (!res) return;
 
-   const control = ControlPanelStatus.edit(interaction.client, interaction.guildId!)
+      const { controlPanel, volumen } = PanelStatusHandler.edit(
+         interaction.client,
+         interaction.guildId!
+      )
+      const panelControlComponent = new PanelStatusComponent()
 
-   const row1 = ControlComponent.buildRows(control?.controlPanel?.components[0].components || [])
-   const row2 = ControlComponent.updateToMuteSong(control?.controlPanel?.components[1].components || [])
+      const embed = panelControlComponent
+         .embed.from(controlPanel.embeds[0])
+         .bodyUpdate({ volumen: String(volumen ?? 50) })
+         .build()
+         
+      const components = panelControlComponent
+         .buttons.from(controlPanel.components || [])
+         .updateToActiveSong()
+         .buildRows()
 
-   control?.controlPanel.edit({
-      embeds: control?.controlPanel.embeds,
-      components: [...row1, row2]
-   })
+      await controlPanel.edit({
+         embeds: [embed],
+         components: components,
+      })
 
-   interaction.reply({
-      ...res.message,
-   });
+      interaction.reply({
+         ...res.message,
+      });
+
+   } catch (error) {
+      console.log(error);
+   }
 }
 
 export const button = {

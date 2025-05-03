@@ -1,7 +1,7 @@
 import { CustonInteraction, EventButtons } from '../../doman/types';
 import { SongService } from '../../application/service';
-import { ControlPanelStatus } from '../../application/handler/controlPanel';
-import { ControlComponent } from '../../infrastructure/discord';
+import { PanelStatusHandler } from '../../application/handler/controlPanel';
+import { PanelStatusComponent } from '../../infrastructure/discord';
 
 const options = {
    data: {
@@ -12,24 +12,33 @@ const options = {
 const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
 
-   const res = await SongService.getInstance()
-      .play(interaction);
+   try {
+      const res = await SongService.getInstance()
+         .play(interaction);
 
-   if (!res) return;
+      if (!res) return;
 
-   const control = ControlPanelStatus.edit(interaction.client, interaction.guildId!)
+      const { controlPanel } = PanelStatusHandler.edit(
+         interaction.client,
+         interaction.guildId!
+      )
 
-   const row1 = ControlComponent.updateToPause(control?.controlPanel?.components[0].components || [])
-   const row2 = ControlComponent.buildRows(control?.controlPanel?.components[1].components || [])
+      const buttonsWitRows = new PanelStatusComponent()
+         .buttons.from(controlPanel?.components || [])
+         .updateToPause()
+         .buildRows()
 
-   control?.controlPanel.edit({
-      embeds: control?.controlPanel.embeds,
-      components: [row1, ...row2],
-   })
+      await controlPanel.edit({
+         embeds: controlPanel.embeds,
+         components: buttonsWitRows,
+      })
 
-   interaction.reply({
-      ...res.message,
-   });
+      await interaction.reply({
+         ...res.message,
+      });
+   } catch (error) {
+      console.log(error);
+   }
 };
 
 export const button = {

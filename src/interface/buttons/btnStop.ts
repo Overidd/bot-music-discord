@@ -1,5 +1,6 @@
 import { CustonInteraction, EventButtons } from '../../doman/types';
 import { SongService } from '../../application/service';
+import { PanelStatusHandler } from '../../application/handler/controlPanel';
 
 const options = {
    data: {
@@ -14,6 +15,8 @@ const execute = async (interaction: CustonInteraction) => {
       .stop(interaction);
 
    if (!res) return;
+
+   PanelStatusHandler.delete(interaction.client, interaction.guildId!)
 
    interaction.reply({
       ...res.message,

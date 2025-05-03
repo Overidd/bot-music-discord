@@ -1,8 +1,7 @@
 import { CustonInteraction, EventButtons } from '../../doman/types';
 import { SongService } from '../../application/service';
-import { ControlPanelStatus } from '../../application/handler/controlPanel';
-import { ControlComponent, EmdebComponent } from '../../infrastructure/discord';
-
+import { PanelStatusHandler } from '../../application/handler/controlPanel';
+import { PanelStatusComponent, EmdebComponent } from '../../infrastructure/discord';
 
 const options = {
    data: {
@@ -19,14 +18,19 @@ const execute = async (interaction: CustonInteraction) => {
 
       if (!res) return;
 
-      const control = ControlPanelStatus.edit(interaction.client, interaction.guildId!)
+      const { controlPanel } = PanelStatusHandler.edit(
+         interaction.client,
+         interaction.guildId!
+      )
 
-      const row1 = ControlComponent.updateToPlaying(control?.controlPanel?.components[0].components || [])
-      const row2 = ControlComponent.buildRows(control?.controlPanel?.components[1].components || [])
+      const buttonsWitRows = new PanelStatusComponent()
+         .buttons.from(controlPanel?.components || [])
+         .updateToPlaying()
+         .buildRows()
 
-      control?.controlPanel.edit({
-         embeds: control?.controlPanel.embeds,
-         components: [row1, ...row2]
+      await controlPanel.edit({
+         embeds: controlPanel.embeds,
+         components: buttonsWitRows,
       })
 
       await interaction.reply({
@@ -34,6 +38,7 @@ const execute = async (interaction: CustonInteraction) => {
       });
 
    } catch (error) {
+      console.log(error);
       const sentMessage = await interaction.reply({
          embeds: [EmdebComponent.emdebError('❌ Lo siento ocurrio un error')]
       }) as { delete: any };
@@ -49,4 +54,3 @@ export const button = {
    ...options,
    execute,
 }
-

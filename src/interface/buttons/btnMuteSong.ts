@@ -1,7 +1,7 @@
 import { CustonInteraction, EventButtons } from '../../doman/types';
 import { SongService } from '../../application/service';
-import { ControlPanelStatus } from '../../application/handler/controlPanel';
-import { ControlComponent } from '../../infrastructure/discord';
+import { PanelStatusHandler } from '../../application/handler/controlPanel';
+import { PanelStatusComponent } from '../../infrastructure/discord';
 
 const options = {
    data: {
@@ -12,24 +12,40 @@ const options = {
 const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
 
-   const res = await SongService.getInstance()
-      .muteMusic(interaction);
+   try {
+      const res = await SongService.getInstance()
+         .muteMusic(interaction);
 
-   if (!res) return;
+      if (!res) return;
 
-   const control = ControlPanelStatus.edit(interaction.client, interaction.guildId!)
+      const { controlPanel } = PanelStatusHandler.edit(
+         interaction.client,
+         interaction.guildId!
+      )
 
-   const row1 = ControlComponent.buildRows(control?.controlPanel?.components[0].components || [])
-   const row2 = ControlComponent.updateToActiveSong(control?.controlPanel?.components[1].components || [])
+      const panelControlComponent = new PanelStatusComponent()
 
-   control?.controlPanel.edit({
-      embeds: control?.controlPanel.embeds,
-      components: [...row1, row2]
-   })
+      const embed = panelControlComponent
+         .embed.from(controlPanel.embeds[0])
+         .bodyUpdate({ volumen: String(0) })
+         .build()
+      const components = panelControlComponent
+         .buttons.from(controlPanel.components || [])
+         .updateToActiveSong()
+         .buildRows()
 
-   interaction.reply({
-      ...res.message,
-   });
+      await controlPanel.edit({
+         embeds: [embed],
+         components: components,
+      })
+
+      interaction.reply({
+         ...res.message,
+      });
+
+   } catch (error) {
+      console.log(error);
+   }
 }
 
 export const button = {
