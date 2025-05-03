@@ -7,7 +7,7 @@ const options = {
    once: false
 };
 
-const execute = async (interaction: CustonInteraction) => {
+async function execute(interaction: CustonInteraction) {
    const guildHandler = new GuildHandler();
    const channelHandler = new ChannelHandler();
    const interactionHandler = new InteractionHandler();

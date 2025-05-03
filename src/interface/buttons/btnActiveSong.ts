@@ -28,7 +28,7 @@ const execute = async (interaction: CustonInteraction) => {
          .embed.from(controlPanel.embeds[0])
          .bodyUpdate({ volumen: String(volumen ?? 50) })
          .build()
-         
+
       const components = panelControlComponent
          .buttons.from(controlPanel.components || [])
          .updateToActiveSong()

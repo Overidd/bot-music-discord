@@ -6,10 +6,10 @@ import { ENV } from './env';
 export const configBot: IConfigBot = {
    TOKEN: ENV.TOKEN_SECRET_BOT,
    ownerID: [ENV.GUILD_ID_SERVER], //escribe tu ID de usuario de Discord. Ejemplo: ["id"] o ["id1","id2"]
-   pathCommands: './src/interface/commands',
-   pathButtons:  './src/interface/buttons',
-   pathEvents: './src/interface/event/client',
-   pathEventsPlayer: './src/interface/event/player',
+   pathCommands: ENV.IS_DEPLOYED ? './dist/interface/commands' : './src/interface/commands',
+   pathButtons: ENV.IS_DEPLOYED ? './dist/interface/buttons' : './src/interface/buttons',
+   pathEvents: ENV.IS_DEPLOYED ? './dist/interface/event/client' : './src/interface/event/client',
+   pathEventsPlayer: ENV.IS_DEPLOYED ? './dist/interface/event/player' : './src/interface/event/player',
    webBotInvite: 'botInvite',
    supportServer: 'supportServer',
    mongodbURL: 'mongodb://admin:adminpassword@localhost:27017',

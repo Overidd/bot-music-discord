@@ -21,7 +21,7 @@ export class EventFileLoader {
 
       for (const fileName of fileNames) {
 
-         if (!fileName.endsWith('.ts')) continue;
+         if (!fileName.endsWith('.ts') && !fileName.endsWith('.js')) continue;
 
          const { event } = await require(path.join(pathDir, fileName));
 
@@ -36,7 +36,7 @@ export class EventFileLoader {
 
       for (const element of fileNamesPlayer) {
 
-         if (!element.endsWith('.ts')) continue;
+         if (!element.endsWith('.ts') && !element.endsWith('.js')) continue;
 
          const { event } = await require(path.join(pathDirPlayer, element));
 
