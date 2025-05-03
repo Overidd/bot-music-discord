@@ -1,7 +1,7 @@
 import { ButtonBuilder } from 'discord.js';
 import { IButtonBasic } from '../../../doman/types';
 
-export class ButtonComponent {
+export class ButtonComponents {
 
 
    static basic(data: IButtonBasic) {

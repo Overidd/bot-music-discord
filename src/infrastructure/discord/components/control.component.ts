@@ -1,29 +1,8 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
+import { ActionRow, ActionRowBuilder, APIEmbed, ButtonBuilder, ButtonComponent, EmbedBuilder, JSONEncodable } from 'discord.js';
 import { dataButtons, EventButtons } from '../../../doman/types';
 import { ValidateUrl } from '../../../utils';
-import { ButtonComponent } from './button.component';
+import { ButtonComponents } from './button.component';
 
-interface ICreateEmdeb {
-   nameMusic?: string,
-   nameSourceMusic?: string,
-   currentDuration?: string,
-   duration?: string,
-   volumen?: string,
-   quantityInQueue?: string,
-   urlMusic?: string,
-   imageMusic?: string,
-}
-
-interface ICreateButtons {
-   isActiveSong: boolean,
-   isMuteSong: boolean,
-   isPause?: boolean,
-   isResume?: boolean,
-}
-
-interface Props extends ICreateEmdeb {
-   voiceChannel?: string,
-}
 
 const imageSocialMusic: { [key: string]: string } = {
    'soundcloud': 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746114336/uzyz3dttiftkpjqt2tuf.png',
@@ -31,59 +10,158 @@ const imageSocialMusic: { [key: string]: string } = {
    'spotify': 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746114335/jsribordfkvsj4pjnyn1.png',
 }
 
-export class ControlComponent {
+interface IEmdebHeader {
+   nameMusic?: string;
+   nameSourceMusic?: string;
+   urlMusic?: string;
+   imageMusic?: string;
+}
+interface IEmdebBody {
+   duration: string,
+   volumen: string,
+   quantityInQueue: string,
+}
 
-   static createEmbed({
-      nameMusic,
-      nameSourceMusic,
-      currentDuration,
-      duration,
-      volumen,
-      quantityInQueue,
-      urlMusic,
-      imageMusic,
-   }: ICreateEmdeb) {
-      const infoMusicEmbed = new EmbedBuilder()
-         .setColor('#5865f2')
-         .setTitle(`\`🎵 ${nameMusic}\``)
-         .setAuthor({
-            name: 'Panel de control',
-            iconURL: nameSourceMusic && imageSocialMusic.hasOwnProperty(nameSourceMusic)
-               ? imageSocialMusic[nameSourceMusic]
-               : undefined
-         })
-         .addFields(
-            {
-               name: '\u200B',
-               value: '\u200B'
-            },
-            {
-               name: `⏱️ Duracion`,
-               value: `\`   ${duration}   \``,
-               inline: true,
-            },
-            {
-               name: '🔊 Volumen',
-               value: `\`   ${volumen}%   \``,
-               inline: true
-            },
-            {
-               name: '📃 En cola',
-               value: `\`   ${quantityInQueue}   \``,
-               inline: true
-            },
-         );
+interface IEmdebBodyFooter {
+   text: string,
+   iconUser: string,
+}
 
-      if (ValidateUrl.baseHttp(urlMusic)) infoMusicEmbed.setURL(urlMusic!);
+const FIELD_MAP = {
+   duration: '⏱️ Duracion',
+   volumen: '🔊 Volumen',
+   quantityInQueue: '📃 En cola'
+} as const;
 
+class EmbedComponent {
+   private emdeb?: EmbedBuilder;
 
-      if (ValidateUrl.baseHttp(imageMusic)) infoMusicEmbed.setThumbnail(`${imageMusic}`);
-
-      return infoMusicEmbed
+   constructor() { // Lansar un error si se intenta crear la instancia directamente, sin usar el metodo statico create o from.
    }
 
-   static createButtons(data?: ICreateButtons) {
-      const buttons = new Set()
+   static create() {
+      const newEdeb = new this();
+      newEdeb.emdeb = new EmbedBuilder();
+      return newEdeb;
+   }
+
+   static from(data: JSONEncodable<APIEmbed> | APIEmbed) {
+      const newEdeb = new this();
+      newEdeb.emdeb = EmbedBuilder.from(data);
+      return newEdeb;
+   }
+   private ensureEmbedExists() {
+      if (!this.emdeb) {
+         throw new Error('EmbedBuilder no está inicializado. Usa EmbedComponent.create() o from().');
+      }
+   }
+   private applyHeaderData({
+      nameMusic,
+      nameSourceMusic,
+      urlMusic,
+      imageMusic
+   }: IEmdebHeader) {
+      const embed = this.emdeb!;
+      if (nameMusic) embed.setTitle(`\`🎵 ${nameMusic}\``);
+      if (nameSourceMusic) embed.setAuthor({
+         name: 'Panel de control',
+         iconURL: imageSocialMusic[nameSourceMusic] ?? undefined
+      });
+      if (ValidateUrl.baseHttp(urlMusic)) embed.setURL(urlMusic!);
+      if (ValidateUrl.baseHttp(imageMusic)) embed.setThumbnail(imageMusic!);
+   }
+
+   header(data: IEmdebHeader) {
+      this.ensureEmbedExists();
+      this.emdeb!.setColor('#5865f2');
+      this.applyHeaderData(data);
+      return this;
+   }
+
+   updateHeader(data: IEmdebHeader) {
+      this.ensureEmbedExists();
+      this.applyHeaderData(data);
+      return this;
+   }
+
+   body(data: IEmdebBody) {
+      this.ensureEmbedExists();
+      const fields = Object.entries(data).map(([key, value]) => ({
+         name: FIELD_MAP[key as keyof IEmdebBody],
+         value: `\`   ${key === 'volumen' ? value + '%' : value}   \``,
+         inline: true
+      }));
+
+      this.emdeb!.addFields({ name: '\u200B', value: '\u200B' }, ...fields);
+      return this;
+   }
+
+   private updateField(fieldKey: keyof IEmdebBody, newValue: string) {
+      if (!this.emdeb || !this.emdeb.data.fields) return this;
+
+      const name = FIELD_MAP[fieldKey];
+      const field = this.emdeb.data.fields.find(f => f.name === name);
+      if (field) {
+         field.value = `\`   ${fieldKey === 'volumen' ? newValue + '%' : newValue}   \``;
+      }
+   }
+
+   // setFields(fields: APIEmbedField[]) {
+   //    this.emdeb!.data.fields = fields;
+   //    return this;
+   // }
+
+   bodyUpdate(data: Partial<IEmdebBody>) {
+      Object.entries(data).forEach(([key, value]) => {
+         if (!value) return;
+         this.updateField(key as any, value)
+      })
+      return this
+   }
+
+   footer(data: IEmdebBodyFooter) {
+      this.ensureEmbedExists();
+      this.emdeb?.setFooter({
+         text: data.text,
+         iconURL: data.iconUser,
+      })
+      return this
+   }
+
+   updateFooter(data: Partial<IEmdebBodyFooter>) {
+      if (!this.emdeb) return;
+
+      const footer = this.emdeb.data.footer;
+      if (data.text && footer?.text) {
+         footer.text = data.text
+      }
+
+      if (data.iconUser && footer?.icon_url) {
+         footer.icon_url = data.iconUser;
+      }
+
+      return this
+   }
+
+   build(): EmbedBuilder {
+      this.ensureEmbedExists();
+      return this.emdeb!;
+   }
+}
+
+interface ICreateButtons {
+   isActiveSong: boolean,
+   isMuteSong: boolean,
+   isPaused: boolean,
+   isPlaying: boolean,
+}
+class ButtonsComponent {
+   private buttons: Set<ButtonBuilder> = new Set()
+
+   constructor() { }
+
+   static create(data?: ICreateButtons) {
+      const newButtons = new ButtonsComponent()
 
       if (!data) {
          const btns = dataButtons.filter(item => {
@@ -98,15 +176,14 @@ export class ControlComponent {
 
             label && btn.setLabel(label);
 
-            buttons.add(btn)
+            newButtons.buttons.add(btn)
          }
-
-         return buttons
+         return newButtons
       }
 
       for (const { emoji, label, name, style } of dataButtons) {
-         if (name === EventButtons.BTN_PAUSE.name && !!data.isPause) continue;
-         if (name === EventButtons.BTN_PLAY.name && !!data.isResume) continue;
+         if (name === EventButtons.BTN_PAUSE.name && !!data.isPaused) continue;
+         if (name === EventButtons.BTN_PLAY.name && !!data.isPlaying) continue;
          if (name === EventButtons.BTN_MUTESONG.name && !!data.isMuteSong) continue;
          if (name === EventButtons.BTN_ACTIVESONG.name && !!data.isActiveSong) continue;
 
@@ -117,189 +194,89 @@ export class ControlComponent {
             .setStyle(style as any);
          label && btn.setLabel(label);
 
-         buttons.add(btn)
+         newButtons.buttons.add(btn)
       }
 
-      return buttons
+      return newButtons
    }
 
-   static buildRows(buttons: Set<ButtonBuilder>) {
-      const rows: ActionRowBuilder<ButtonBuilder>[] = [];
-      let row = new ActionRowBuilder<ButtonBuilder>();
-      rows.push(row);
 
-      Array.from(buttons).forEach((item, index) => {
-         if ((index + 1) % 5 === 0) {
-            row = new ActionRowBuilder<ButtonBuilder>();
-            rows.push(row);
+   static from(components: Array<ActionRow<ButtonComponent>>) {
+      const newButtons = new this();
+
+      for (const row of components) {
+         for (const component of row?.components) {
+            newButtons.loadComponetButtons(component);
          }
-         row.addComponents(item);
+      }
+      return newButtons;
+   }
+
+   private loadComponetButtons(component: any) {
+      if (!component) return;
+
+      const btnData = component.data;
+
+      if (!btnData.label && !btnData.emoji) {
+         return;
+      }
+
+      this.buttons.add(ButtonBuilder.from(btnData));
+   }
+
+
+   buildRows() {
+      const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+      let currentRow = new ActionRowBuilder<ButtonBuilder>();
+      rows.push(currentRow);
+
+      Array.from(this.buttons).forEach((item, index) => {
+         if ((index + 1) % 5 === 0) {
+            currentRow = new ActionRowBuilder<ButtonBuilder>();
+            if (index + 1 === this.buttons.size) return;
+            rows.push(currentRow);
+         }
+         currentRow.addComponents(item);
       });
 
       return rows;
    }
 
-   static createDefault(data: Props) {
-      const infoMusicEmbed = this.createEmbed(data);
-      const buttons = this.createButtons();
-      return {
-         embeds: [infoMusicEmbed],
-         components: this.buildRows(buttons as any),
-      };
+   private getCustomId(button: ButtonBuilder): string | undefined {
+      return (button as any)?.data?.custom_id;
    }
 
-   static createWithState(data: Props, dataButton: ICreateButtons) {
-      const infoMusicEmbed = this.createEmbed(data);
-      const buttons = this.createButtons(dataButton);
-      return {
-         embeds: [infoMusicEmbed],
-         components: this.buildRows(buttons as any),
-      };
-   }
-
-   static updateButton(
-      components: any[],
+   private updateButton(
       targetName: string,
       replacement: ButtonBuilder
    ) {
-      const row = new ActionRowBuilder<ButtonBuilder>();
-      components.forEach(item => {
-         if (item?.data?.custom_id === targetName) {
-            row.addComponents(replacement);
-         } else {
-            row.addComponents(item);
-         }
+      const updatedButtons = Array.from(this.buttons).map((button: any) => {
+         return this.getCustomId(button) === targetName ? replacement : button;
       });
-      return row;
+
+      this.buttons = new Set(updatedButtons);
+      // return this.buildRows();
+      return this
    }
 
-   static updateToPause(components: ButtonBuilder[]) {
-      return this.updateButton(components, EventButtons.BTN_PLAY.name, ButtonComponent.basic(EventButtons.BTN_PAUSE));
+   updateToPause() {
+      return this.updateButton(EventButtons.BTN_PLAY.name, ButtonComponents.basic(EventButtons.BTN_PAUSE));
    }
 
-   static updateToPlaying(components: ButtonBuilder[]) {
-      return this.updateButton(components, EventButtons.BTN_PAUSE.name, ButtonComponent.basic(EventButtons.BTN_PLAY));
+   updateToPlaying() {
+      return this.updateButton(EventButtons.BTN_PAUSE.name, ButtonComponents.basic(EventButtons.BTN_PLAY));
    }
 
-   static updateToMuteSong(components: Array<ButtonBuilder | any>) {
-      return this.updateButton(components, EventButtons.BTN_ACTIVESONG.name, ButtonComponent.basic(EventButtons.BTN_MUTESONG));
+   updateToMuteSong() {
+      return this.updateButton(EventButtons.BTN_ACTIVESONG.name, ButtonComponents.basic(EventButtons.BTN_MUTESONG));
    }
 
-   static updateToActiveSong(components: Array<ButtonBuilder | any>) {
-      return this.updateButton(components, EventButtons.BTN_MUTESONG.name, ButtonComponent.basic(EventButtons.BTN_ACTIVESONG))
+   updateToActiveSong() {
+      return this.updateButton(EventButtons.BTN_MUTESONG.name, ButtonComponents.basic(EventButtons.BTN_ACTIVESONG))
    }
 }
 
-export const controlComponent = ({
-   nameMusic,
-   urlMusic,
-   duration,
-   currentDuration,
-   imageMusic,
-   voiceChannel,
-   quantityInQueue,
-   nameSourceMusic,
-   volumen,
-}: Props) => {
-
-   const infoMusicEmbed = new EmbedBuilder()
-      .setColor('#5865f2')
-      .setTitle(`\`🎵 ${nameMusic}\``)
-      .setAuthor({
-         name: 'Panel de control',
-         iconURL: nameSourceMusic && imageSocialMusic.hasOwnProperty(nameSourceMusic)
-            ? imageSocialMusic[nameSourceMusic]
-            : undefined
-      })
-      .addFields(
-         {
-            name: '\u200B',
-            value: '\u200B'
-         },
-         {
-            name: `⏱️ Duracion`,
-            value: `\`${currentDuration} / ${duration}\``,
-            inline: true,
-         },
-         {
-            name: '🔊 Volumen',
-            value: `\`   ${volumen}%   \``,
-            inline: true
-         },
-         {
-            name: '📃 En cola',
-            value: `\`   ${quantityInQueue}   \``,
-            inline: true
-         },
-      );
-
-   if (ValidateUrl.baseHttp(urlMusic)) infoMusicEmbed.setURL(urlMusic!);
-
-
-   if (ValidateUrl.baseHttp(imageMusic)) infoMusicEmbed.setThumbnail(`${imageMusic}`);
-
-   const btnBack = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_BACK.name)
-      // .setLabel('Atras')
-      .setEmoji(EventButtons.BTN_BACK.emoji)
-      .setStyle(ButtonStyle.Primary);
-
-   const btnPause = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_PAUSE.name)
-      // .setLabel('Pausar')
-      .setEmoji(EventButtons.BTN_PAUSE.emoji)
-      .setStyle(ButtonStyle.Primary);
-
-
-   const btnPass = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_SKIP.name)
-      // .setLabel('Adelantar')
-      .setEmoji(EventButtons.BTN_SKIP.emoji)
-      .setStyle(ButtonStyle.Primary);
-
-   // const btnPlay = new ButtonBuilder()
-   //    .setCustomId(EventButtons.BTN_PLAY.name)
-   //    // .setLabel('Play')
-   //    .setEmoji(EventButtons.BTN_PLAY.emoji)
-   //    .setStyle(ButtonStyle.Primary);
-
-   const btnStop = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_STOP.name)
-      // .setLabel('Detener')
-      .setEmoji(EventButtons.BTN_STOP.emoji)
-      .setStyle(ButtonStyle.Danger);
-
-   const btnMuteSong = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_MUTESONG.name)
-      .setLabel(EventButtons.BTN_MUTESONG.label)
-      .setEmoji(EventButtons.BTN_MUTESONG.emoji)
-      .setStyle(ButtonStyle.Secondary);
-
-   const btnActiveSong = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_ACTIVESONG.name)
-      .setLabel(EventButtons.BTN_ACTIVESONG.label)
-      .setEmoji(EventButtons.BTN_ACTIVESONG.emoji)
-      .setStyle(ButtonStyle.Secondary);
-
-   const btnPlaylist = new ButtonBuilder()
-      .setCustomId(EventButtons.BTN_PLAYLIST.name)
-      .setLabel(EventButtons.BTN_PLAYLIST.label)
-      .setEmoji(EventButtons.BTN_PLAYLIST.emoji)
-      .setStyle(ButtonStyle.Secondary);
-
-
-   const row1 = new ActionRowBuilder<ButtonBuilder>()
-      .addComponents(
-         btnBack, btnPause, btnPass, btnStop
-      );
-
-   const row2 = new ActionRowBuilder<ButtonBuilder>()
-      .addComponents(
-         btnMuteSong, btnActiveSong, btnPlaylist
-      );
-
-   return {
-      embeds: [infoMusicEmbed],
-      components: [row1, row2],
-   }
+export class PanelStatusComponent {
+   embed = EmbedComponent;
+   buttons = ButtonsComponent;
 }
