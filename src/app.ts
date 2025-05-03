@@ -1,5 +1,4 @@
 import ffmpegPath from '@ffmpeg-installer/ffmpeg';
-import { YtDlpPlugin } from '@distube/yt-dlp';
 import { SpotifyPlugin } from '@distube/spotify';
 import { SoundCloudPlugin } from '@distube/soundcloud';
 import { ClientDiscord, ClientDistube } from './infrastructure/discord';
@@ -7,6 +6,7 @@ import { InteractionFileLoader, EventFileLoader } from './infrastructure/fileLoa
 import { configBot } from './config';
 
 const main = async () => {
+
    const client = new ClientDiscord();
    const distube = new ClientDistube({
       client,
@@ -14,7 +14,6 @@ const main = async () => {
       plugins: [
          new SpotifyPlugin(),
          new SoundCloudPlugin(),
-         new YtDlpPlugin(),
       ]
    });
 
@@ -38,6 +37,8 @@ const main = async () => {
    await main();
 })();
 
+
+// main.ts (o donde instancies Distube)
 
 
 
