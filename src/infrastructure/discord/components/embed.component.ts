@@ -1,15 +1,13 @@
-import { EmbedBuilder } from "discord.js";
-
+import { EmbedBuilder } from 'discord.js';
 
 
 export class EmdebComponent {
 
-   public static emdebError(text: string) {
-      const emdeb = new EmbedBuilder()
+   public static error(text: string) {
+      return new EmbedBuilder()
          .setColor('#fb3823')
          .setDescription(`\`${text}\``)
 
-      return emdeb
    }
 
 

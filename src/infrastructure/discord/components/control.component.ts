@@ -24,7 +24,7 @@ interface IEmdebBody {
 
 interface IEmdebBodyFooter {
    text: string,
-   iconUser: string,
+   iconUser?: string,
 }
 
 const FIELD_MAP = {
@@ -128,8 +128,8 @@ class EmbedComponent {
       return this
    }
 
-   updateFooter(data: Partial<IEmdebBodyFooter>) {
-      if (!this.emdeb) return;
+   footerUpdate(data: Partial<IEmdebBodyFooter>) {
+      if (!this.emdeb) return this;
 
       const footer = this.emdeb.data.footer;
       if (data.text && footer?.text) {
@@ -151,9 +151,11 @@ class EmbedComponent {
 
 interface ICreateButtons {
    isActiveSong: boolean,
-   isMuteSong: boolean,
-   isPaused: boolean,
+   // isMuteSong: boolean,
+   // isPaused: boolean,
    isPlaying: boolean,
+   isActiveLoop: boolean,
+   // isDeactiveLoop: boolean,
 }
 class ButtonsComponent {
    private buttons: Set<ButtonBuilder> = new Set()
@@ -165,7 +167,7 @@ class ButtonsComponent {
 
       if (!data) {
          const btns = dataButtons.filter(item => {
-            return [EventButtons.BTN_PLAY.name, EventButtons.BTN_ACTIVESONG.name].includes(item.name) ? false : true;
+            return [EventButtons.BTN_PLAY.name, EventButtons.BTN_ACTIVESONG.name, EventButtons.BTN_DISACTIVELOOP.name].includes(item.name) ? false : true;
          })
 
          for (const { emoji, label, name, style } of btns) {
@@ -182,10 +184,18 @@ class ButtonsComponent {
       }
 
       for (const { emoji, label, name, style } of dataButtons) {
-         if (name === EventButtons.BTN_PAUSE.name && !!data.isPaused) continue;
-         if (name === EventButtons.BTN_PLAY.name && !!data.isPlaying) continue;
-         if (name === EventButtons.BTN_MUTESONG.name && !!data.isMuteSong) continue;
-         if (name === EventButtons.BTN_ACTIVESONG.name && !!data.isActiveSong) continue;
+         // if (name === EventButtons.BTN_PAUSE.name && data.isPaused) continue;
+         if (name === EventButtons.BTN_PAUSE.name && !data.isPlaying ||
+            name === EventButtons.BTN_PLAY.name && data.isPlaying
+         ) continue;
+
+         if (name === EventButtons.BTN_MUTESONG.name && !data.isActiveSong
+            || name === EventButtons.BTN_ACTIVESONG.name && data.isActiveSong
+         ) continue;
+
+         if (name === EventButtons.BTN_ACTIVELOOP.name && !data.isActiveLoop ||
+            name === EventButtons.BTN_DISACTIVELOOP.name && data.isActiveLoop
+         ) continue;
 
          const btn = new ButtonBuilder()
             .setCustomId(name)
@@ -231,9 +241,9 @@ class ButtonsComponent {
       rows.push(currentRow);
 
       Array.from(this.buttons).forEach((item, index) => {
-         if ((index + 1) % 5 === 0) {
+         if ((index + 1) % 6 === 0) {
             currentRow = new ActionRowBuilder<ButtonBuilder>();
-            if (index + 1 === this.buttons.size) return;
+            if (index === this.buttons.size) return;
             rows.push(currentRow);
          }
          currentRow.addComponents(item);
@@ -274,6 +284,15 @@ class ButtonsComponent {
    updateToActiveSong() {
       return this.updateButton(EventButtons.BTN_MUTESONG.name, ButtonComponents.basic(EventButtons.BTN_ACTIVESONG))
    }
+
+   updateToActiveLoop() {
+      return this.updateButton(EventButtons.BTN_DISACTIVELOOP.name, ButtonComponents.basic(EventButtons.BTN_ACTIVELOOP));
+   }
+
+   updateToDisactiveLoop() {
+      return this.updateButton(EventButtons.BTN_ACTIVELOOP.name, ButtonComponents.basic(EventButtons.BTN_DISACTIVELOOP));
+   }
+
 }
 
 export class PanelStatusComponent {
