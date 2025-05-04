@@ -2,12 +2,12 @@ import { ActionRow, ButtonComponent, Embed, InteractionResponse, Message } from 
 
 // components: ActionRow<ButtonComponent>[]; // Representa filas de botones en Discord
 // embeds: Embed[]; // Representa los embeds en Discord
-interface IControlPanel extends Message<true> {
+export interface IMessageRespons extends Message<boolean> {
    components: any[]; // Representa filas de botones en Discord
    embeds: Embed[]; // Representa los embeds en Discord
 }
 
-interface IControlPanel1 extends InteractionResponse<boolean> {
+export interface InteractionRespons extends InteractionResponse<boolean> {
    components: ActionRow<ButtonComponent>[]; // Representa filas de botones en Discord
    embeds: Embed[]; // Representa los embeds en Discord
 }
@@ -21,5 +21,5 @@ export interface IControlPanelStatus {
    isMuteSong?: boolean; // Indica si la canción está silenciada
    isActiveSong?: boolean; // Indica si hay una canción activa
    volumen?: number; // Volumen actual
-   controlPanel: IControlPanel | IControlPanel1; // Panel de control
+   controlPanel: IMessageRespons | InteractionRespons; // Panel de control
 }
