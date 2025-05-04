@@ -5,7 +5,6 @@ import { ErrorService } from '../../application/service';
 import { PanelStatusComponent } from '../../infrastructure/discord';
 import { PanelStatusHandler } from '../../application/handler/controlPanel';
 
-
 const options = {
    data: new SlashCommandBuilder()
       .setName('controller')
@@ -19,7 +18,7 @@ const execute = async (interaction: CustonInteraction) => {
       const queue = interaction?.client?.player?.getQueue(interaction.guildId!);
 
       if (!queue || !queue.playing || queue.songs.length === 0) {
-         throw CustonError.validation('⛔ No hay música reproduciéndose.')
+         throw CustonError.validation('No hay música reproduciéndose.')
       };
 
       const panelControlComponent = new PanelStatusComponent()

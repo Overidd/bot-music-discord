@@ -1,6 +1,4 @@
-import { EmbedBuilder, MessageFlags } from 'discord.js';
 import { Events, Queue, Song } from 'distube';
-
 
 const options = {
    name: Events.ADD_SONG,
@@ -9,7 +7,7 @@ const options = {
 
 const execute = async (client: any, queue: Queue, song: Song, ...args: any) => {
 
-   console.log('Evento ADD_SONG', args);
+   console.log('Evento ADD_SONG');
 
 
    // const emdeb = new EmbedBuilder()

@@ -15,7 +15,7 @@ export class SongService {
 
    private validate(queue?: Queue) {
       if (!queue || !queue.playing || queue.songs.length === 0) {
-         throw CustonError.validation('⛔ No hay música reproduciéndose.');
+         throw CustonError.validation('No hay música reproduciéndose.');
       }
    }
 
@@ -27,7 +27,7 @@ export class SongService {
       this.validate(queue);
 
       if (queue.songs.length <= 1) {
-         throw CustonError.validation('⛔ No hay más canciones en la cola para saltar.');
+         throw CustonError.validation('No hay más canciones en la cola para saltar.');
       }
 
       await queue.skip();
@@ -41,7 +41,7 @@ export class SongService {
       this.validate(queue);
 
       if (!queue.previousSongs || queue.previousSongs.length === 0) {
-         throw CustonError.validation('⛔ No hay canción anterior en el historial.');
+         throw CustonError.validation('No hay canción anterior en el historial.');
       }
       await queue.previous();
    }

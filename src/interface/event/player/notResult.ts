@@ -1,6 +1,4 @@
-import { Events, Queue } from 'distube'
 import { ClientDiscord } from '../../../infrastructure/discord'
-import { Message } from 'discord.js'
 import { CustonInteraction } from '../../../doman/types'
 
 const options = {

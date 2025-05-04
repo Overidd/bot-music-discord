@@ -1,6 +1,5 @@
 import { Events, Queue, Song } from 'distube'
-import { ClientDiscord, EmdebComponent } from '../../../infrastructure/discord'
-
+import { ClientDiscord } from '../../../infrastructure/discord'
 
 const options = {
    name: Events.ERROR,
@@ -8,14 +7,9 @@ const options = {
 }
 
 const execute = async (client: ClientDiscord, errorMessage: string, queue: Queue, song: Song) => {
+   console.log('Evento ERROR');
+   // console.log(errorMessage);
 
-
-   try {
-      console.log(errorMessage);
-      
-   } catch (error) {
-      console.log('-------Events.ERROR-------');
-   }
 }
 
 export const event = {

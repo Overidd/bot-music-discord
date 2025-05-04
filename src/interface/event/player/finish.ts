@@ -1,7 +1,7 @@
 import { Events, Queue, Song } from 'distube';
-import { ClientDiscord } from '../../../infrastructure/discord';
-import { EmbedBuilder } from 'discord.js';
+import { ClientDiscord, EmbedComponent } from '../../../infrastructure/discord';
 import { PanelStatusHandler } from '../../../application/handler/controlPanel';
+import { Timeout } from '../../../utils';
 
 const options = {
    name: Events.FINISH,
@@ -9,22 +9,14 @@ const options = {
 }
 
 const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
-   const emdeb = new EmbedBuilder()
-      .setColor('#0099ff')
-      .setTitle(`\`Finalizado\``)
-
    PanelStatusHandler.delete(client, queue.textChannel?.guildId!)
 
    const message = await queue.textChannel?.send({
-      embeds: [emdeb]
+      embeds: [EmbedComponent.success('Finalizado')]
    });
-
    if (!message) return;
 
-   const timeout = setTimeout(() => {
-      message.delete().catch(console.error);
-      clearTimeout(timeout)
-   }, 60 * 1000); // 1 minuto
+   Timeout.delete(message)
 }
 
 export const event = {

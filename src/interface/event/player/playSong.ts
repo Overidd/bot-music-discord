@@ -1,13 +1,13 @@
-import { Events, Queue, Song } from 'distube'
-import { ClientDiscord, PanelStatusComponent, EmdebComponent } from '../../../infrastructure/discord'
-import { PanelStatusHandler } from '../../../application/handler/controlPanel'
+import { Events, Queue, Song } from 'distube';
+import { ErrorService } from '../../../application/service';
+import { PanelStatusHandler } from '../../../application/handler/controlPanel';
+import { ClientDiscord, PanelStatusComponent } from '../../../infrastructure/discord';
 
 const options = {
    name: Events.PLAY_SONG,
    once: false
 }
 
-//Este evento se ejecuta cuando se reproduce una nueva cancion
 const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
 
    //TODO: puede ser que pordiramos obtener el idioma del servidor
@@ -50,14 +50,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
       })
 
    } catch (error) {
-      const sentMessage = await queue.textChannel?.send({
-         embeds: [EmdebComponent.error('❌ Lo siento ocurrio un error')]
-      }) as { delete: any };
-
-      const timeout = setTimeout(() => {
-         sentMessage.delete().catch(console.error);
-         clearTimeout(timeout)
-      }, 5000);
+      ErrorService.send(queue, error as Error)
    }
 }
 
