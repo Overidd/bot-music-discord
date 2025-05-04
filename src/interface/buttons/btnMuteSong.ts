@@ -1,7 +1,7 @@
 import { CustonInteraction, EventButtons } from '../../doman/types';
-import { SongService } from '../../application/service';
-import { PanelStatusHandler } from '../../application/handler/controlPanel';
+import { ErrorService, SongService } from '../../application/service';
 import { PanelStatusComponent } from '../../infrastructure/discord';
+import { PanelStatusHandler } from '../../application/handler/controlPanel';
 
 const options = {
    data: {
@@ -13,11 +13,6 @@ const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
 
    try {
-      const res = await SongService.getInstance()
-         .muteMusic(interaction);
-
-      if (!res) return;
-
       const { controlPanel } = PanelStatusHandler.edit(
          interaction.client,
          interaction.guildId!
@@ -28,23 +23,33 @@ const execute = async (interaction: CustonInteraction) => {
       const embed = panelControlComponent
          .embed.from(controlPanel.embeds[0])
          .bodyUpdate({ volumen: String(0) })
+         .footerUpdate({
+            text: `Muteado por ${interaction.user.username}`,
+            iconUser: interaction.user.displayAvatarURL(),
+         })
          .build()
-      const components = panelControlComponent
-         .buttons.from(controlPanel.components || [])
-         .updateToActiveSong()
-         .buildRows()
+
+      const queue = interaction.client.player?.getQueue(interaction.guildId!)
+      if (!queue) throw Error;
+
+      const components = panelControlComponent.buttons.create({
+         isActiveSong: queue?.volume > 0,
+         isPlaying: queue?.playing && !queue?.paused,
+         isActiveLoop: queue?.repeatMode === 2,
+      }).buildRows()
+      
+      await SongService.getInstance()
+         .muteMusic(interaction);
 
       await controlPanel.edit({
          embeds: [embed],
          components: components,
       })
 
-      interaction.reply({
-         ...res.message,
-      });
+      await interaction.deferUpdate();
 
    } catch (error) {
-      console.log(error);
+      ErrorService.reply(interaction, error as Error)
    }
 }
 

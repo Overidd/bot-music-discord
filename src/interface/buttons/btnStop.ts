@@ -1,5 +1,5 @@
 import { CustonInteraction, EventButtons } from '../../doman/types';
-import { SongService } from '../../application/service';
+import { ErrorService, SongService } from '../../application/service';
 import { PanelStatusHandler } from '../../application/handler/controlPanel';
 
 const options = {
@@ -11,16 +11,16 @@ const options = {
 const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
 
-   const res = await SongService.getInstance()
-      .stop(interaction);
+   try {
+      await SongService.getInstance()
+         .stop(interaction);
 
-   if (!res) return;
+      PanelStatusHandler.delete(interaction.client, interaction.guildId!)
 
-   PanelStatusHandler.delete(interaction.client, interaction.guildId!)
-
-   interaction.reply({
-      ...res.message,
-   });
+      await interaction.deferUpdate();
+   } catch (error) {
+      ErrorService.reply(interaction, error as Error)
+   }
 };
 
 export const button = {

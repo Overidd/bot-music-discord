@@ -1,11 +1,11 @@
+import { PanelStatusHandler } from '../../application/handler/controlPanel';
+import { ErrorService, SongService } from '../../application/service';
 import { CustonInteraction, EventButtons } from '../../doman/types';
 import { PanelStatusComponent } from '../../infrastructure/discord';
-import { ErrorService, SongService } from '../../application/service';
-import { PanelStatusHandler } from '../../application/handler/controlPanel';
 
 const options = {
    data: {
-      name: EventButtons.BTN_PAUSE.name,
+      name: EventButtons.BTN_ACTIVELOOP.name,
    }
 }
 
@@ -19,14 +19,13 @@ const execute = async (interaction: CustonInteraction) => {
       )
 
       const panelControlComponent = new PanelStatusComponent()
-
       const embed = panelControlComponent
          .embed.from(controlPanel.embeds[0])
          .footerUpdate({
-            text: `Pausado por ${interaction.user.username}`,
+            text: `Loop desactivado por ${interaction.user.username}`,
             iconUser: interaction.user.displayAvatarURL(),
          })
-         .build()
+         .build();
 
       const queue = interaction.client.player?.getQueue(interaction.guildId!)
       if (!queue) throw Error;
@@ -38,14 +37,12 @@ const execute = async (interaction: CustonInteraction) => {
       }).buildRows()
 
       await SongService.getInstance()
-         .pause(interaction);
+         .desactiveLoopMusic(interaction);
 
       await controlPanel.edit({
          embeds: [embed],
          components: components,
       })
-
-      await interaction.deferUpdate();
 
    } catch (error) {
       ErrorService.reply(interaction, error as Error)

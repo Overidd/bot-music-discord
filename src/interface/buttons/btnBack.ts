@@ -1,5 +1,5 @@
 import { CustonInteraction, EventButtons } from '../../doman/types';
-import { SongService } from '../../application/service';
+import { ErrorService, SongService } from '../../application/service';
 
 const options = {
    data: {
@@ -10,14 +10,13 @@ const options = {
 const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
 
-   const res = await SongService.getInstance()
-      .back(interaction);
+   try {
+      await SongService.getInstance()
+         .back(interaction);
 
-   if (!res) return;
-
-   interaction.reply({
-      ...res.message,
-   });
+   } catch (error) {
+      ErrorService.reply(interaction, error as Error)
+   }
 };
 
 export const button = {
