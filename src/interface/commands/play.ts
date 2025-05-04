@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, GuildTextBasedChannel, EmbedBuilder, MessageFlags } from 'discord.js';
 import { CustonInteraction } from '../../doman/types';
 import { DisTubeError } from 'distube';
-import { EmdebComponent } from '../../infrastructure/discord';
+import { ErrorService } from '../../application/service';
 
 const options = {
    data: new SlashCommandBuilder()
@@ -81,9 +81,7 @@ const execute = async (interaction: CustonInteraction) => {
          interaction.client.player?.emit('notResult' as any, interaction, textChannel, error);
          return
       }
-      interaction.editReply({
-         embeds: [EmdebComponent.emdebError(`❌ Ocurrió un error al buscar la música`)],
-      });
+      ErrorService.reply(interaction, error as Error)
    }
 };
 
