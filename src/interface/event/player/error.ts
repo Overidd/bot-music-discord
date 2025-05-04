@@ -10,30 +10,15 @@ const options = {
 const execute = async (client: ClientDiscord, errorMessage: string, queue: Queue, song: Song) => {
 
 
-   console.log(errorMessage);
-   if (String(errorMessage)?.includes('FFMPEG_EXITED')) {
-
-      return await queue.textChannel?.send({
-         embeds: [EmdebComponent.error('❌ No es posible reproducer')]
-      })
+   try {
+      console.log(errorMessage);
+      
+   } catch (error) {
+      console.log('-------Events.ERROR-------');
    }
-   return await queue.textChannel?.send({
-      embeds: [EmdebComponent.error('❌ Lo siento ocurrio un error')]
-   })
 }
 
 export const event = {
    ...options,
    execute
-}
-
-{
-   textChannel: ` DisTubeError [FFMPEG_EXITED]: ffmpeg exited with code 1
-       at ChildProcess.<anonymous> (D:\Projects\bot-music-discord\node_modules\distube\src\core\DisTubeStream.ts:134:28)     
-       at ChildProcess.emit (node:events:518:28)
-       at Process.ChildProcess._handle.onexit (node:internal/child_process:294:12)`;
-   {
-      errorCode: 'FFMPEG_EXITED'
-   }
-
 }
