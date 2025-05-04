@@ -25,10 +25,17 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
             quantityInQueue: String(queue.songs.length),
             volumen: String(queue.volume),
          })
+         .footer({
+            text: `\`\``,
+            iconUser: 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746313476/qukbvlboemwfpgxgdd5s.gif'
+         })
          .build()
 
-      const components = panelControlComponent.buttons.create()
-         .buildRows()
+      const components = panelControlComponent.buttons.create({
+         isActiveSong: queue?.volume > 0,
+         isPlaying: queue?.playing && !queue?.paused,
+         isActiveLoop: queue?.repeatMode === 2,
+      }).buildRows()
 
       const sentMessage = await queue.textChannel?.send({
          embeds: [embed],
@@ -44,7 +51,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
 
    } catch (error) {
       const sentMessage = await queue.textChannel?.send({
-         embeds: [EmdebComponent.emdebError('❌ Lo siento ocurrio un error')]
+         embeds: [EmdebComponent.error('❌ Lo siento ocurrio un error')]
       }) as { delete: any };
 
       const timeout = setTimeout(() => {

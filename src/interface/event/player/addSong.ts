@@ -12,20 +12,20 @@ const execute = async (client: any, queue: Queue, song: Song, ...args: any) => {
    console.log('Evento ADD_SONG', args);
 
 
-   const emdeb = new EmbedBuilder()
-      .setColor('#0099ff')
-      .setDescription(`Se Agrego: \`${song.name}\`⏱️[${song.formattedDuration}]`)
+   // const emdeb = new EmbedBuilder()
+   //    .setColor('#0099ff')
+   //    .setDescription(`Se Agrego: \`${song.name}\`⏱️[${song.formattedDuration}]`)
 
-   const message = await queue.textChannel?.send({
-      embeds: [emdeb]
-   });
+   // const message = await queue.textChannel?.send({
+   //    embeds: [emdeb]
+   // });
 
-   if (!message) return
+   // if (!message) return
 
-   const timeout = setTimeout(() => {
-      message.delete().catch(console.error);
-      clearTimeout(timeout)
-   }, 60 * 1000 * 7)
+   // const timeout = setTimeout(() => {
+   //    message.delete().catch(console.error);
+   //    clearTimeout(timeout)
+   // }, 60 * 1000 * 7)
 }
 
 export const event = {

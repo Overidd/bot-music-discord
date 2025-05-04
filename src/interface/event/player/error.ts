@@ -14,11 +14,11 @@ const execute = async (client: ClientDiscord, errorMessage: string, queue: Queue
    if (String(errorMessage)?.includes('FFMPEG_EXITED')) {
 
       return await queue.textChannel?.send({
-         embeds: [EmdebComponent.emdebError('❌ No es posible reproducer')]
+         embeds: [EmdebComponent.error('❌ No es posible reproducer')]
       })
    }
    return await queue.textChannel?.send({
-      embeds: [EmdebComponent.emdebError('❌ Lo siento ocurrio un error')]
+      embeds: [EmdebComponent.error('❌ Lo siento ocurrio un error')]
    })
 }
 
