@@ -15,4 +15,5 @@ export type ICommand = {
 export type IButton = {
    data: { name: string },
    execute: (...args: any[]) => any
+   setupPlayerListeners?: (client: any) => any;
 };

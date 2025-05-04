@@ -34,6 +34,10 @@ export class InteractionHandler extends BaseInteractionHandler {
 
       const button = this.interaction?.client.buttons?.get(this.interaction?.customId)
 
+      if (button?.setupPlayerListeners) {
+         button?.setupPlayerListeners(this.interaction.client)
+      }
+
       button?.execute(this.interaction)
    }
 }
