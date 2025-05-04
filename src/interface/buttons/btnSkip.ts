@@ -8,7 +8,7 @@ const options = {
 };
 
 const execute = async (interaction: CustonInteraction) => {
-   if (!interaction.isButton()) return;
+   if (!interaction.isButton()) throw Error;
 
    try {
       await SongService.getInstance()
@@ -19,7 +19,6 @@ const execute = async (interaction: CustonInteraction) => {
    } catch (error) {
       ErrorService.reply(interaction, error as Error)
    }
-
 };
 
 export const button = {

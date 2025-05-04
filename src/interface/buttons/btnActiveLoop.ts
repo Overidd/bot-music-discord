@@ -13,6 +13,10 @@ const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
 
    try {
+
+      await SongService.getInstance()
+         .desactiveLoopMusic(interaction);
+
       const { controlPanel } = PanelStatusHandler.edit(
          interaction.client,
          interaction.guildId!
@@ -36,13 +40,12 @@ const execute = async (interaction: CustonInteraction) => {
          isActiveLoop: queue?.repeatMode === 2,
       }).buildRows()
 
-      await SongService.getInstance()
-         .desactiveLoopMusic(interaction);
-
       await controlPanel.edit({
          embeds: [embed],
          components: components,
       })
+      
+      await interaction.deferUpdate();
 
    } catch (error) {
       ErrorService.reply(interaction, error as Error)
