@@ -26,7 +26,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
             volumen: String(queue.volume),
          })
          .footer({
-            text: `\`\``,
+            text: '\u00A0',
             iconUser: 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746313476/qukbvlboemwfpgxgdd5s.gif'
          })
          .build()

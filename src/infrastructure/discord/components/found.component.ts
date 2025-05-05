@@ -1,9 +1,8 @@
 import { EmbedBuilder } from 'discord.js';
-import { ValidateUrl } from '../../../utils';
 
 interface IEmbedHeader {
    nameMusic: string;
-   urlMusic: string;
+   urlMusic?: string;
    imageMusic?: string;
 }
 
@@ -19,8 +18,8 @@ interface IEmbedFooter {
 }
 
 const FIELD_MAP: { [key: string]: any } = {
-   duration: 'Autor',
-   volumen: 'Duracion',
+   autor: 'Autor',
+   duration: 'Duracion',
    source: 'Fuente'
 };
 
@@ -29,15 +28,15 @@ export class FoundComponent {
 
    constructor() { }
 
-   header(data: Partial<IEmbedHeader>) {
-      this.embed.setAuthor({
-         name: 'Musica agregado',
-         iconURL: data.imageMusic
-      });
+   header(data: IEmbedHeader) {
+      const name = data.nameMusic.length > 25 ? data.nameMusic.slice(0, 25) + '...' : data.nameMusic
+      this.embed
+         .setColor('#5865f2')
+         .setAuthor({
+            name: `Agregado: ${name}`,
+            iconURL: data.imageMusic
+         })
 
-      if (data.nameMusic) this.embed.setTitle(`\`${data.nameMusic}\``);
-
-      if (ValidateUrl.baseHttp(data.urlMusic)) this.embed.setURL(data.urlMusic!);
       return this
    }
 

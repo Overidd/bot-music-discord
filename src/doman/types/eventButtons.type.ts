@@ -126,7 +126,7 @@ export const dataButtons: IButtonBasic[] = [
    {
       name: 'btnPlaylist',
       emoji: '📃',
-      label: 'Lista de reproduce',
+      label: 'PlayList',
       style: 2,
    },
 ]

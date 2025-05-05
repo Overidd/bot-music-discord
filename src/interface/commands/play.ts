@@ -85,12 +85,11 @@ const execute = async (interaction: CustonInteraction) => {
       const embed = new FoundComponent()
          .header({
             imageMusic: queue?.songs.at(-1)?.thumbnail,
-            nameMusic: queue?.songs.at(-1)?.name,
-            urlMusic: queue?.songs.at(-1)?.url,
+            nameMusic: queue?.songs.at(-1)?.name!,
          })
          .body({
             autor: queue?.songs.at(-1)?.uploader.name,
-            duration: String(queue?.songs.at(-1)?.duration),
+            duration: String(queue?.songs.at(-1)?.formattedDuration),
             source: queue?.songs.at(-1)?.source,
          })
          .build();

@@ -8,7 +8,7 @@ export class ErrorService {
 
    static async reply(interaction: CustonInteraction, error: Error, time: number = 2_000): Promise<void> {
 
-      if (interaction.isRepliable() && !interaction.replied && !interaction.deferred) return;
+      if (interaction.isButton() && interaction.isRepliable() && !interaction.replied && !interaction.deferred) return;
 
       if (!interaction.isButton() && !interaction.isChatInputCommand()) return;
 
@@ -28,7 +28,7 @@ export class ErrorService {
    }
 
    static async editReply(interaction: CustonInteraction, error: Error, time: number = 2_000): Promise<void> {
-      if (interaction.isRepliable() && !interaction.replied && !interaction.deferred) return;
+      if (interaction.isButton() && interaction.isRepliable() && !interaction.replied && !interaction.deferred) return;
 
       if (!interaction.isButton() && !interaction.isChatInputCommand()) return;
 

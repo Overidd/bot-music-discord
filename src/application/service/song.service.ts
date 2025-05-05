@@ -99,6 +99,14 @@ export class SongService {
       await queue.setVolume(50);
    }
 
+   public async setVolumen(interaction: CustonInteraction, levelVolume: number) {
+      const queue = interaction.client?.player?.getQueue(interaction.guildId!);
+
+      this.validate(queue);
+
+      await queue?.setVolume(levelVolume)
+   }
+
    public async activeLoopMusic(interaction: CustonInteraction) {
       if (!interaction.isButton()) return;
 

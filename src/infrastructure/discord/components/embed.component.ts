@@ -20,4 +20,9 @@ export class EmbedComponent {
          .setColor('#ffc107')
          .setDescription(`\`⚠️ ${text}\``)
    }
+   public static settingVolumen(text: string) {
+      return new EmbedBuilder()
+         .setColor('#5865f2')
+         .setDescription(`\`🔊 ${text}\``)
+   }
 }
