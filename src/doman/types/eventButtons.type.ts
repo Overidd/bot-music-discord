@@ -63,7 +63,7 @@ export const EventButtons = {
    BTN_PLAYLIST: {
       name: 'btnPlaylist',
       emoji: '📃',
-      label: 'Lista de reproduce',
+      label: 'PlayList',
       style: 2,
    },
 }

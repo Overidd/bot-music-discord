@@ -51,6 +51,8 @@ export class ClientDistube extends DisTube {
       try {
          await Promise.race([playPromise, timeoutPromise]);
       } catch (err) {
+         console.log('Error Destube');
+         console.log(err);
          // 1) Desconecta
          const conn = getVoiceConnection(options.member.guild.id);
          if (conn) conn.destroy();

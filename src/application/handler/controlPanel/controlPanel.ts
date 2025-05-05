@@ -39,14 +39,14 @@ export class PanelStatusHandler {
       client.controlPanelStatus.delete(guildId)
    }
 
-   static edit(client: ClientDiscord, guildId: string): IControlPanelStatus {
+   static edit(client: ClientDiscord, guildId: string): IControlPanelStatus | undefined {
       if (!guildId) {
-         throw new Error('No implement guildId')
+         // throw new Error('No implement guildId')
       }
       if (!client.controlPanelStatus.has(guildId)) {
-         throw new Error('No implement controlPanelStatus')
+         // throw new Error('No implement controlPanelStatus')
       }
 
-      return client.controlPanelStatus.get(guildId)!
+      return client.controlPanelStatus.get(guildId)
    }
 }

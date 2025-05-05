@@ -15,15 +15,18 @@ const execute = async (interaction: CustonInteraction) => {
    try {
       await SongService.getInstance()
          .activeLoopMusic(interaction);
-         
-      const { controlPanel } = PanelStatusHandler.edit(
+
+      const panelStatusHandler = PanelStatusHandler.edit(
          interaction.client,
          interaction.guildId!
       )
 
+      if (!panelStatusHandler) throw Error;
+
       const panelControlComponent = new PanelStatusComponent()
+
       const embed = panelControlComponent
-         .embed.from(controlPanel.embeds[0])
+         .embed.from(panelStatusHandler.controlPanel.embeds[0])
          .footerUpdate({
             text: `Loop activado por ${interaction.user.username}`,
             iconUser: interaction.user.displayAvatarURL(),
@@ -39,7 +42,7 @@ const execute = async (interaction: CustonInteraction) => {
          isActiveLoop: queue?.repeatMode === 2,
       }).buildRows()
 
-      await controlPanel.edit({
+      await panelStatusHandler.controlPanel.edit({
          embeds: [embed],
          components: components,
       })

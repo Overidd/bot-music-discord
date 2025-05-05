@@ -8,7 +8,7 @@ const options = {
 
 const execute = async (client: ClientDiscord, errorMessage: string, queue: Queue, song: Song) => {
    console.log('Evento ERROR');
-   // console.log(errorMessage);
+   console.log(errorMessage);
 
 }
 

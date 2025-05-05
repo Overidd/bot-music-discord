@@ -3,26 +3,26 @@ import { dataButtons, EventButtons } from '../../../doman/types';
 import { ValidateUrl } from '../../../utils';
 import { ButtonComponents } from './button.component';
 
-
-const imageSocialMusic: { [key: string]: string } = {
+export const imageSocialMusic: { [key: string]: string } = {
    'soundcloud': 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746114336/uzyz3dttiftkpjqt2tuf.png',
    'youtube': 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746114335/lidqhayybfxkf5pbjfxg.png',
    'spotify': 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746114335/jsribordfkvsj4pjnyn1.png',
+   'defaulImagenMusic': 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746389023/c2gw81pbqsimneruyyde.gif',
 }
 
-interface IEmdebHeader {
+interface IEmbedHeader {
    nameMusic?: string;
    nameSourceMusic?: string;
    urlMusic?: string;
    imageMusic?: string;
 }
-interface IEmdebBody {
+interface IEmbedBody {
    duration: string,
    volumen: string,
    quantityInQueue: string,
 }
 
-interface IEmdebBodyFooter {
+interface IEmbedFooter {
    text: string,
    iconUser?: string,
 }
@@ -31,7 +31,7 @@ const FIELD_MAP = {
    duration: '⏱️ Duracion',
    volumen: '🔊 Volumen',
    quantityInQueue: '📃 En cola'
-} as const;
+};
 
 class EmbedComponent {
    private emdeb?: EmbedBuilder;
@@ -50,45 +50,51 @@ class EmbedComponent {
       newEdeb.emdeb = EmbedBuilder.from(data);
       return newEdeb;
    }
+
    private ensureEmbedExists() {
       if (!this.emdeb) {
          throw new Error('EmbedBuilder no está inicializado. Usa EmbedComponent.create() o from().');
       }
    }
+
    private applyHeaderData({
       nameMusic,
       nameSourceMusic,
       urlMusic,
       imageMusic
-   }: IEmdebHeader) {
+   }: IEmbedHeader) {
       const embed = this.emdeb!;
-      if (nameMusic) embed.setTitle(`\`🎵 ${nameMusic}\``);
+
       if (nameSourceMusic) embed.setAuthor({
          name: 'Panel de control',
          iconURL: imageSocialMusic[nameSourceMusic] ?? undefined
       });
+
+      if (nameMusic) embed.setTitle(`\`🎵 ${nameMusic}\``);
+
       if (ValidateUrl.baseHttp(urlMusic)) embed.setURL(urlMusic!);
-      if (ValidateUrl.baseHttp(imageMusic)) embed.setThumbnail(imageMusic!);
+
+      embed.setThumbnail(imageMusic ?? imageSocialMusic.defaulImagenMusic)
    }
 
-   header(data: IEmdebHeader) {
+   header(data: IEmbedHeader) {
       this.ensureEmbedExists();
       this.emdeb!.setColor('#5865f2');
       this.applyHeaderData(data);
       return this;
    }
 
-   updateHeader(data: IEmdebHeader) {
+   updateHeader(data: IEmbedHeader) {
       this.ensureEmbedExists();
       this.applyHeaderData(data);
       return this;
    }
 
-   body(data: IEmdebBody) {
+   body(data: IEmbedBody) {
       this.ensureEmbedExists();
       const fields = Object.entries(data).map(([key, value]) => ({
-         name: FIELD_MAP[key as keyof IEmdebBody],
-         value: `\`   ${key === 'volumen' ? value + '%' : value}   \``,
+         name: FIELD_MAP[key as keyof IEmbedBody],
+         value: `\`   ${key === 'volumen' ? value + '%' : value === 'Live' ? `${value} 🔴` : value}   \``,
          inline: true
       }));
 
@@ -96,7 +102,7 @@ class EmbedComponent {
       return this;
    }
 
-   private updateField(fieldKey: keyof IEmdebBody, newValue: string) {
+   private updateField(fieldKey: keyof IEmbedBody, newValue: string) {
       if (!this.emdeb || !this.emdeb.data.fields) return this;
 
       const name = FIELD_MAP[fieldKey];
@@ -111,7 +117,7 @@ class EmbedComponent {
    //    return this;
    // }
 
-   bodyUpdate(data: Partial<IEmdebBody>) {
+   bodyUpdate(data: Partial<IEmbedBody>) {
       Object.entries(data).forEach(([key, value]) => {
          if (!value) return;
          this.updateField(key as any, value)
@@ -119,7 +125,7 @@ class EmbedComponent {
       return this
    }
 
-   footer(data: IEmdebBodyFooter) {
+   footer(data: IEmbedFooter) {
       this.ensureEmbedExists();
       this.emdeb?.setFooter({
          text: data.text,
@@ -128,7 +134,7 @@ class EmbedComponent {
       return this
    }
 
-   footerUpdate(data: Partial<IEmdebBodyFooter>) {
+   footerUpdate(data: Partial<IEmbedFooter>) {
       if (!this.emdeb) return this;
 
       const footer = this.emdeb.data.footer;
@@ -206,10 +212,8 @@ class ButtonsComponent {
 
          newButtons.buttons.add(btn)
       }
-
       return newButtons
    }
-
 
    static from(components: Array<ActionRow<ButtonComponent>>) {
       const newButtons = new this();

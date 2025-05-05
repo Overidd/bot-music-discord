@@ -13,19 +13,21 @@ const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isButton()) return;
 
    try {
-      
+
       await SongService.getInstance()
          .muteMusic(interaction);
 
-      const { controlPanel } = PanelStatusHandler.edit(
+      const panelStatusHandler = PanelStatusHandler.edit(
          interaction.client,
          interaction.guildId!
       )
 
-      const panelControlComponent = new PanelStatusComponent()
+      if (!panelStatusHandler) throw Error;
 
+      const panelControlComponent = new PanelStatusComponent()
+      
       const embed = panelControlComponent
-         .embed.from(controlPanel.embeds[0])
+         .embed.from(panelStatusHandler.controlPanel.embeds[0])
          .bodyUpdate({ volumen: String(0) })
          .footerUpdate({
             text: `Muteado por ${interaction.user.username}`,
@@ -42,7 +44,7 @@ const execute = async (interaction: CustonInteraction) => {
          isActiveLoop: queue?.repeatMode === 2,
       }).buildRows()
 
-      await controlPanel.edit({
+      await panelStatusHandler.controlPanel.edit({
          embeds: [embed],
          components: components,
       })
