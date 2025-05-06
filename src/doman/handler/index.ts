@@ -1,2 +1,2 @@
-export * from './baseInteraction.handler';
+export * from './baseInteraction';
 // export * from './typeInteraction.handler';
