@@ -1,1 +1,1 @@
-export * from './custonError';
+export * from './custon';
