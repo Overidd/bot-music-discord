@@ -63,22 +63,23 @@ const execute = async (interaction: CustonInteraction) => {
       const queue = interaction.client.player?.getQueue
          (interaction.guildId!);
 
-      const panelStatusHandler = PanelStatusHandler.edit(
+      const controlPanelStatus = PanelStatusHandler.get(
          interaction.client,
          interaction.guildId!
       );
 
-      if (panelStatusHandler?.controlPanel) {
-         const embedComponent = new PanelStatusComponent()
-            .embed.from(panelStatusHandler.controlPanel.embeds[0])
+      if (controlPanelStatus) {
+         const embed = new PanelStatusComponent.Embed()
+            .setLang(controlPanelStatus.getLang)
+            .from(controlPanelStatus.getRespon!.embeds[0])
             .bodyUpdate({
                quantityInQueue: String(queue?.songs.length),
             })
             .build();
 
-         await panelStatusHandler.controlPanel.edit({
-            embeds: [embedComponent],
-            components: panelStatusHandler.controlPanel.components,
+         await controlPanelStatus.getRespon?.edit({
+            embeds: [embed],
+            components: controlPanelStatus.getRespon.components,
          });
       }
 

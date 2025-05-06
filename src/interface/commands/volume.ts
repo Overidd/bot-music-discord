@@ -1,9 +1,10 @@
-import { SlashCommandBuilder } from "discord.js";
-import { CustonInteraction } from "../../doman/types";
-import { ErrorService, SongService } from "../../application/service";
-import { EmbedComponent, PanelStatusComponent } from "../../infrastructure/discord";
-import { Timeout } from "../../utils";
-import { PanelStatusHandler } from "../../application/handler/controlPanel";
+import { Timeout } from '../../utils';
+import { SlashCommandBuilder } from 'discord.js';
+import { CustonError } from '../../doman/error';
+import { CustonInteraction } from '../../doman/types';
+import { PanelStatusHandler } from '../../application/handler/controlPanel';
+import { ErrorService, SongService } from '../../application/service';
+import { EmbedComponent, PanelStatusComponent } from '../../infrastructure/discord';
 
 
 const options = {
@@ -23,46 +24,51 @@ const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isChatInputCommand()) return;
 
    try {
-      const levelVolume = interaction.options.getInteger('number')
+      const levelVolume = interaction.options.getInteger('number') ?? 50;
 
-      if (!levelVolume) throw Error;
+      const queue = interaction?.client?.player?.getQueue(interaction.guildId!);
+
+      if (!queue || !queue.playing || queue.songs.length === 0) {
+         throw CustonError.validation('No hay música reproduciéndose.')
+      };
 
       await new SongService()
          .setVolumen(interaction, levelVolume)
 
-      const panelStatusHandler = PanelStatusHandler.edit(
+      const controlPanelStatus = PanelStatusHandler.get(
          interaction.client,
          interaction.guildId!
-      );
+      )
 
-      if (panelStatusHandler?.controlPanel) {
-         panelStatusHandler.volumen = levelVolume
+      if (!controlPanelStatus) throw Error;
 
-         const panelControlComponent = new PanelStatusComponent()
+      controlPanelStatus.setValume(queue.volume) 
 
-         const embed = panelControlComponent.embed.from(panelStatusHandler.controlPanel.embeds[0])
-            .bodyUpdate({
-               volumen: String(levelVolume)
-            })
-            .build();
+      const embed = new PanelStatusComponent.Embed()
+         .setLang(controlPanelStatus.getLang)
+         .from(controlPanelStatus.getRespon!.embeds[0])
+         .bodyUpdate({
+            volumen: String(levelVolume)
+         })
+         .build();
 
-         const queue = interaction?.client?.player?.getQueue(interaction.guildId!);
-
-         const components = panelControlComponent.buttons.create({
+      const components = new PanelStatusComponent.Buttons()
+         .setLang(controlPanelStatus.getLang)
+         .create({
             isActiveSong: levelVolume > 0,
             isPlaying: queue?.playing && !queue?.paused ? true : false,
             isActiveLoop: queue?.repeatMode === 2,
          }).buildRows()
 
-         await panelStatusHandler.controlPanel.edit({
-            embeds: [embed],
-            components: components,
-         });
-      }
+      await controlPanelStatus.getRespon?.edit({
+         embeds: [embed],
+         components: components,
+      });
 
       await interaction.reply({
          embeds: [EmbedComponent.settingVolumen(`Volumen ajustado: **[${levelVolume}]**%`)]
       })
+
       const response = await interaction.fetchReply()
       Timeout.delete(response, 15_000);
 

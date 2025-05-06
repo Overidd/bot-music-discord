@@ -1,5 +1,6 @@
 import { Events, Queue, Song } from 'distube';
-import { ErrorService } from '../../../application/service';
+import { ControlPanelStatusEntity } from '../../../doman/entity';
+import { ErrorService, LangService } from '../../../application/service';
 import { PanelStatusHandler } from '../../../application/handler/controlPanel';
 import { ClientDiscord, PanelStatusComponent } from '../../../infrastructure/discord';
 
@@ -9,11 +10,22 @@ const options = {
 }
 
 const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
-
+   let lang;
    //TODO: puede ser que pordiramos obtener el idioma del servidor
    try {
-      const panelControlComponent = new PanelStatusComponent()
-      const embed = panelControlComponent.embed.create()
+      if (!queue.textChannel?.guildId) throw Error;
+
+      const controlPanelStatus = PanelStatusHandler.get(
+         client,
+         queue.textChannel?.guildId
+      )
+      if (!controlPanelStatus) {
+         lang = LangService.get(queue.textChannel?.guildId)
+      }
+
+      const embed = new PanelStatusComponent.Embed()
+         .setLang(lang)
+         .create()
          .header({
             imageMusic: song?.thumbnail,
             nameMusic: song?.name,
@@ -31,23 +43,33 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
          })
          .build()
 
-      const components = panelControlComponent.buttons.create({
-         isActiveSong: queue?.volume > 0,
-         isPlaying: queue?.playing && !queue?.paused,
-         isActiveLoop: queue?.repeatMode === 2,
-      }).buildRows()
+      const components = new PanelStatusComponent.Buttons()
+         .setLang(lang ?? controlPanelStatus?.getLang)
+         .create({
+            isActiveSong: queue?.volume > 0,
+            isPlaying: queue?.playing && !queue?.paused,
+            isActiveLoop: queue?.repeatMode === 2,
+         }).buildRows()
 
       const sentMessage = await queue.textChannel?.send({
          embeds: [embed],
          components,
       });
 
-      PanelStatusHandler.delete(client, queue.textChannel?.guildId!)
+      if (controlPanelStatus && controlPanelStatus?.setRespon) {
+         controlPanelStatus.setRespon(sentMessage)
 
-      PanelStatusHandler.create(client, {
-         guildId: queue.textChannel?.guildId!,
-         controlPanel: sentMessage!
-      })
+      } else {
+         const controlPanelStatusEntity = new ControlPanelStatusEntity()
+            .setRespon(sentMessage)
+            .setData({
+               lang: lang ?? controlPanelStatus?.getLang!,
+               guildId: queue.textChannel.guildId,
+               valume: 50,
+            })
+
+         PanelStatusHandler.create(client, controlPanelStatusEntity);
+      }
 
    } catch (error) {
       ErrorService.send(queue, error as Error)
