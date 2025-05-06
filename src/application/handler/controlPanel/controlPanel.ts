@@ -1,33 +1,14 @@
 import { ClientDiscord } from '../../../infrastructure/discord';
-import { IControlPanelStatus } from '../../../doman/types';
+import { ControlPanelStatusEntity } from '../../../doman/entity';
 
 export class PanelStatusHandler {
-   static create(client: ClientDiscord, data: IControlPanelStatus) {
-
-      if (client.controlPanelStatus.has(data.guildId)) return;
+   static create(client: ClientDiscord, entity: ControlPanelStatusEntity) {
+      if (entity?.guildId && client.controlPanelStatus.has(entity.guildId)) return;
 
       client?.controlPanelStatus.set(
-         data.guildId,
-         data
+         entity.guildId!,
+         entity
       )
-   }
-
-   static update(client: ClientDiscord, data: Partial<IControlPanelStatus>) {
-
-      if (data.guildId && !client.controlPanelStatus.has(data.guildId)) return;
-
-      const status = client.controlPanelStatus.get(data.guildId!)
-
-      if (data.controlPanel) {
-         status?.controlPanel.delete()
-      }
-
-      client.controlPanelStatus.delete(data.guildId!)
-
-      client.controlPanelStatus.set(data.guildId!, {
-         ...status!,
-         ...data,
-      })
    }
 
    static delete(client: ClientDiscord, guildId: string) {
@@ -35,11 +16,12 @@ export class PanelStatusHandler {
 
       const status = client.controlPanelStatus.get(guildId)
 
-      status?.controlPanel.delete()
+      status?.getRespon?.delete()
+
       client.controlPanelStatus.delete(guildId)
    }
 
-   static edit(client: ClientDiscord, guildId: string): IControlPanelStatus | undefined {
+   static get(client: ClientDiscord, guildId: string): ControlPanelStatusEntity | undefined {
       if (!guildId) {
          // throw new Error('No implement guildId')
       }
