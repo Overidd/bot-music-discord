@@ -1,2 +1,3 @@
-export * from './song.service';
-export * from './error.service';
+export * from './song';
+export * from './error';
+export * from './lang';
