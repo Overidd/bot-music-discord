@@ -26,13 +26,12 @@ const execute = async (interaction: CustonInteraction) => {
       const embed = new PanelStatusComponent.Embed()
          .setLang(controlPanelStatus.getLang)
          .from(controlPanelStatus.getRespon!.embeds[0])
-         .bodyUpdate({ volumen: String(controlPanelStatus.getValume ?? 50) })
+         .bodyUpdate({ volume: String(controlPanelStatus.getValume ?? 50) })
          .footerUpdate({
             text: interaction.user.username,
             iconUser: interaction.user.displayAvatarURL(),
             textAction: 'actionActivateSong'
-         })
-         .build()
+         }).build()
 
       const queue = interaction.client.player?.getQueue(interaction.guildId!)
       if (!queue) throw Error;
@@ -43,8 +42,7 @@ const execute = async (interaction: CustonInteraction) => {
             isActiveSong: queue?.volume > 0,
             isPlaying: queue?.playing && !queue?.paused,
             isActiveLoop: queue?.repeatMode === 2,
-         })
-         .buildRows()
+         }).buildRows()
 
       await controlPanelStatus.getRespon?.edit({
          embeds: [embed],
