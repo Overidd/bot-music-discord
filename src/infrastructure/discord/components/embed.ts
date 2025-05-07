@@ -1,53 +1,49 @@
-import { EmbedBuilder } from 'discord.js';
-import { LangCode, Translator, typeErrorLang, typeSuccessLag, typeWarning } from '../../../utils';
-import { embedComponentConfig } from '../../../config';
+import { EmbedBuilder } from "discord.js";
+import { embedComponentConfig } from "../../../config";
+import { LangCode, Translator, typeErrorLang, typeSuccessLag, typeWarning } from "../../../utils";
 
 export class EmbedComponent {
-   CONFIG_DATA = embedComponentConfig
+   CONFIG_DATA = embedComponentConfig;
    private translator?: Translator;
 
    setLang(lang: string = 'es') {
-      this.translator = new Translator()
-         .setLang(lang as LangCode);
+      this.translator = new Translator().setLang(lang as LangCode);
       return this;
    }
 
-   public error(typeText: typeErrorLang) {
-      const textTraslator = this.translator?.t(typeText) ?? typeText;
+   private buildEmbed(
+      category: keyof typeof embedComponentConfig,
+      type: string,
+      value?: string
+   ): EmbedBuilder {
+      const config = this.CONFIG_DATA[category];
+      const typeConfig = config.types?.[type];
+      const emoji = typeConfig?.emoji ?? config.emoji ?? '📢';
+      const text = this.translator?.t(type) ?? type;
+
       return new EmbedBuilder()
-         .setColor(this.CONFIG_DATA.error.color as any)
-         .setDescription(this.CONFIG_DATA.error.value(textTraslator))
+         .setColor(config.color as any)
+         .setDescription(config.value(emoji, text, value));
    }
 
-   public success(typeText: typeSuccessLag) {
-      const textTraslator = this.translator?.t(typeText) ?? typeText;
-
-      return new EmbedBuilder()
-         .setColor(this.CONFIG_DATA.success.color as any)
-         .setDescription(this.CONFIG_DATA.success.value(textTraslator))
+   // Métodos públicos
+   public error(typeText: typeErrorLang) {
+      return this.buildEmbed('error', typeText);
    }
 
    public warning(typeText: typeWarning) {
-      const textTraslator = this.translator?.t(typeText) ?? typeText;
+      return this.buildEmbed('warning', typeText);
+   }
 
-      return new EmbedBuilder()
-         .setColor(this.CONFIG_DATA.warning.color as any)
-         .setDescription(this.CONFIG_DATA.warning.value(textTraslator))
+   public success(typeText: typeSuccessLag) {
+      return this.buildEmbed('success', typeText);
    }
 
    public settingLanguaje(value: string) {
-      const textLang = this.translator?.t('settingLanguaje') ?? 'Not fount';
-
-      return new EmbedBuilder()
-         .setColor(this.CONFIG_DATA.settingLanguaje.color as any)
-         .setDescription(this.CONFIG_DATA.settingLanguaje.value(textLang, value))
+      return this.buildEmbed('settingLanguaje', 'settingLanguaje', value);
    }
 
    public settingVolumen(value: string) {
-      const textLang = this.translator?.t('settingVolumen') ?? 'Not fount';
-
-      return new EmbedBuilder()
-         .setColor(this.CONFIG_DATA.settingVolumen.color as any)
-         .setDescription(this.CONFIG_DATA.settingVolumen.value(textLang, value))
+      return this.buildEmbed('settingVolumen', 'settingVolumen', value);
    }
 }

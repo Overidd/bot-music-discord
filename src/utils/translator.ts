@@ -26,13 +26,13 @@ export const dictionarys = {
       errorNotPlaying: 'No hay música reproduciéndose',
       errorNoQueueToSkip: 'No hay más canciones en la cola para saltar',
       errorNoHistoryToBack: 'No hay canción anterior en el historial.',
+      errorHasVoiceChannel: 'Debes estar en un canal de voz',
+      errorHasWriteTheNameMusic: 'Por favor escribe un nombre de música',
+      errorNotTextChannel: 'No se pudo encontrar un canal de texto.',
       errro500: 'Ocurrio un error del servidor',
       success: '',
       successFinished: 'Finalizado',
       warning: '',
-      warningHasVoiceChannel: 'Debes estar en un canal de voz para usar este comando',
-      warningHasWriteTheNameMusic: 'Por favor escribe un nombre de música',
-      warningNotTextChannel: 'No se pudo encontrar un canal de texto.',
       settingVolumen: 'Volumen ajustado',
       settingLanguaje: 'Se cambio de idoma a'
    },
@@ -61,13 +61,13 @@ export const dictionarys = {
       errorNotPlaying: 'No music is playing',
       errorNoQueueToSkip: 'No more songs in the queue to skip',
       errorNoHistoryToBack: 'No previous song in the history.',
+      errorHasVoiceChannel: 'You must be in a voice channel',
+      errorHasWriteTheNameMusic: 'Please write a song name',
+      errorNotTextChannel: 'A text channel could not be found.',
       errro500: 'A server error occurred',
       success: '',
       successFinished: 'Finished',
       warning: '',
-      warningHasVoiceChannel: 'You must be in a voice channel to use this command',
-      warningHasWriteTheNameMusic: 'Please write a song name',
-      warningNotTextChannel: 'A text channel could not be found.',
       settingVolumen: 'Volume adjusted',
       settingLanguaje: 'Language changed to'
    }
@@ -75,9 +75,9 @@ export const dictionarys = {
 
 
 export type LangCode = keyof typeof dictionarys;
-export type typeErrorLang = 'errorNotPlaying' | 'errorNoQueueToSkip' | 'errorNoHistoryToBack' | 'errro500';
+export type typeErrorLang = 'errorNotPlaying' | 'errorNoQueueToSkip' | 'errorNoHistoryToBack' | 'errro500' | 'errorHasVoiceChannel' | 'errorHasWriteTheNameMusic' | 'errorNotTextChannel';
 export type typeSuccessLag = 'successFinished'
-export type typeWarning = 'warningHasVoiceChannel' | 'warningHasWriteTheNameMusic' | 'warningNotTextChannel';
+export type typeWarning = '';
 
 export class Translator {
    private lang?: LangCode;

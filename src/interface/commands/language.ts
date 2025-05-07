@@ -56,8 +56,7 @@ const execute = async (interaction: CustonInteraction) => {
       Timeout.delete(response, 15_000);
 
    } catch (error) {
-      console.error('Error en /language:', error);
-      ErrorService.editReply(interaction, error as Error);
+      ErrorService.response(interaction, error as Error);
    }
 };
 

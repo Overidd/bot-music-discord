@@ -1,5 +1,5 @@
+import { typeErrorLang } from '../../utils';
 
-type typeErrorValidation = 'errorNotPlaying' | 'errorNoQueueToSkip' | 'errorNoHistoryToBack' | 'errro500';
 
 export class CustonError extends Error {
    lang?: string;
@@ -10,7 +10,7 @@ export class CustonError extends Error {
       this.typeMessage = typeMessage;
    }
 
-   public static validation(typeMessage: typeErrorValidation, lang?: string) {
+   public static validation(typeMessage: typeErrorLang, lang?: string) {
       return new CustonError(typeMessage, lang);
    }
    public static notFound(typeMessage: string, lang?: string) {

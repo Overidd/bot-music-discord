@@ -7,87 +7,69 @@ import { PanelStatusHandler } from '../handler/controlPanel';
 
 export class ErrorService {
 
-   static async reply(interaction: any, error: Error, time: number = 2_000): Promise<void> {
-      if (interaction.isButton() && interaction.isRepliable() && interaction.replied && interaction.deferred) return;
+   static async response(interaction: CustonInteraction, error: Error, time: number = 2_000): Promise<void> {
 
       if (!interaction.isButton() && !interaction.isChatInputCommand()) return;
+      if (!interaction.isRepliable()) return;
 
-      const controlPanelStatus = PanelStatusHandler.get(
-         interaction.client,
-         interaction.guildId!
-      )
+      try {
+         const controlPanelStatus = PanelStatusHandler.get(
+            interaction.client,
+            interaction.guildId!
+         );
 
-      const embedComponent = new EmbedComponent()
-         .setLang(controlPanelStatus?.getLang ?? 'es')
+         const embedComponent = new EmbedComponent()
+            .setLang(controlPanelStatus?.getLang ?? 'es');
 
-      if (error instanceof CustonError) {
-         await interaction.reply({
-            embeds: [embedComponent.error(error.typeMessage as any)],
-         })
+         if (error instanceof CustonError) {
 
-         const response = await interaction.fetchReply();
-         Timeout.delete(response, time)
-         return;
+            interaction.deferred && !interaction.replied && await interaction.editReply({ embeds: [embedComponent.error(error.typeMessage as any)] });
+
+            !interaction.deferred && !interaction.replied && await interaction.reply({ embeds: [embedComponent.error(error.typeMessage as any)] });
+
+         } else {
+            interaction.deferred && !interaction.replied && await interaction.editReply({ embeds: [embedComponent.error('errro500')] });
+
+            !interaction.deferred && !interaction.replied && await interaction.reply({ embeds: [embedComponent.error('errro500')] });
+         }
+
+         if (interaction.replied || interaction.deferred) {
+            const fetchedResponse = await interaction.fetchReply();
+            Timeout.delete(fetchedResponse, time);
+         }
+
+      } catch (error) {
+         console.error(error);
       }
-      await interaction.reply({
-         embeds: [embedComponent.error('errro500')],
-      })
-      const response = await interaction.fetchReply();
-      Timeout.delete(response, time)
-   }
-
-   static async editReply(interaction: CustonInteraction, error: Error, time: number = 2_000): Promise<void> {
-      
-      if (interaction.isButton() && interaction.isRepliable() && interaction.replied && interaction.deferred) return;
-
-      if (!interaction.isButton() && !interaction.isChatInputCommand()) return;
-
-      const controlPanelStatus = PanelStatusHandler.get(
-         interaction.client,
-         interaction.guildId!
-      )
-      const embedComponent = new EmbedComponent()
-         .setLang(controlPanelStatus?.getLang)
-
-      if (error instanceof CustonError) {
-         await interaction.editReply({
-            embeds: [embedComponent.error(error.message as any)],
-         })
-         const response = await interaction.fetchReply();
-         Timeout.delete(response, time)
-         return;
-      }
-      await interaction.editReply({
-         embeds: [embedComponent.error('errro500')],
-      })
-      const response = await interaction.fetchReply();
-      Timeout.delete(response, time)
    }
 
    static async send(queue: Queue, error: Error, time: number = 2_000): Promise<void> {
+      try {
+         const controlPanelStatus = PanelStatusHandler.get(
+            queue.client as any,
+            queue?.textChannel?.guildId!
+         )
 
-      const controlPanelStatus = PanelStatusHandler.get(
-         queue.client as any,
-         queue?.textChannel?.guildId!
-      )
+         const embedComponent = new EmbedComponent()
+            .setLang(controlPanelStatus?.getLang)
 
-      const embedComponent = new EmbedComponent()
-         .setLang(controlPanelStatus?.getLang)
+         if (error instanceof CustonError) {
+            const response = await queue.textChannel?.send({
+               embeds: [embedComponent.error(error.message as any)],
+            })
+            if (!response) return;
 
-      if (error instanceof CustonError) {
+            Timeout.delete(response, time)
+            return
+         }
          const response = await queue.textChannel?.send({
-            embeds: [embedComponent.error(error.message as any)],
-         })
+            embeds: [embedComponent.error('errro500')],
+         });
+
          if (!response) return;
-
          Timeout.delete(response, time)
-         return
+      } catch (error) {
+         console.log(error);
       }
-      const response = await queue.textChannel?.send({
-         embeds: [embedComponent.error('errro500')],
-      });
-
-      if (!response) return;
-      Timeout.delete(response, time)
    }
 }

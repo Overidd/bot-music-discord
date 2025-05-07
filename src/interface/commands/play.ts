@@ -2,8 +2,9 @@ import { Timeout } from '../../utils';
 import { CustonInteraction } from '../../doman/types';
 import { PanelStatusHandler } from '../../application/handler/controlPanel';
 import { ErrorService, LangService } from '../../application/service';
-import { SlashCommandBuilder, GuildTextBasedChannel, MessageFlags } from 'discord.js';
-import { EmbedComponent, FoundComponent, PanelStatusComponent } from '../../infrastructure/discord';
+import { SlashCommandBuilder, GuildTextBasedChannel } from 'discord.js';
+import { FoundComponent, PanelStatusComponent } from '../../infrastructure/discord';
+import { CustonError } from '../../doman/error';
 
 const options = {
    data: new SlashCommandBuilder()
@@ -21,9 +22,8 @@ const execute = async (interaction: CustonInteraction) => {
 
    const voiceChannel = interaction.member.voice.channel;
    let lang;
-
    try {
-
+      
       const controlPanelStatus = PanelStatusHandler.get(
          interaction.client,
          interaction.guildId!
@@ -33,37 +33,19 @@ const execute = async (interaction: CustonInteraction) => {
          lang = LangService.get(interaction.guildId!)
       }
 
-      const embedComponent = new EmbedComponent()
-         .setLang(controlPanelStatus?.getLang ?? lang)
-
-      if (!voiceChannel) {
-         return interaction.reply({
-            embeds: [embedComponent.warning('warningHasVoiceChannel')],
-            flags: MessageFlags.Ephemeral
-         });
-      }
+      if (!voiceChannel) throw CustonError.validation('errorHasVoiceChannel');
 
       const query = interaction.options.getString('query')?.replace(/\(.*?\)|\[.*?\]/g, '').trim();
-
       //TODO: Haria falta de validar el query si es de tipo url o spotify o youtube y si es un nombre
-      if (!query) {
-         return interaction.reply({
-            embeds: [embedComponent.warning('warningHasWriteTheNameMusic')],
-            flags: MessageFlags.Ephemeral
-         });
-      }
 
+      if (!query) throw CustonError.validation('errorHasWriteTheNameMusic');
+      
       const textChannel = interaction.channel as GuildTextBasedChannel | null;
-
-      if (!textChannel) {
-         return interaction.reply({
-            embeds: [embedComponent.warning('warningNotTextChannel')],
-            flags: MessageFlags.Ephemeral
-         });
-      }
-
-      interaction.deferReply();
-
+      
+      if (!textChannel) throw CustonError.validation('errorNotTextChannel');
+      
+      await interaction.deferReply();
+      
       await interaction.client.player!.playWithTimeout(
          voiceChannel as any,
          query, {
@@ -112,13 +94,12 @@ const execute = async (interaction: CustonInteraction) => {
       Timeout.delete(response, 15_000);
 
    } catch (error) {
-      console.error(error);
       // if (error instanceof DisTubeError && error?.errorCode === 'NO_RESULT') {
 
       //    interaction.client.player?.emit('notResult' as any, interaction, textChannel, error);
       //    return
       // }
-      ErrorService.editReply(interaction, error as Error)
+      ErrorService.response(interaction, error as Error)
    }
 };
 

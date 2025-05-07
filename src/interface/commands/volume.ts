@@ -75,7 +75,7 @@ const execute = async (interaction: CustonInteraction) => {
       Timeout.delete(response, 15_000);
 
    } catch (error) {
-      await ErrorService.reply(interaction, error as Error)
+      await ErrorService.response(interaction, error as Error)
    }
 }
 

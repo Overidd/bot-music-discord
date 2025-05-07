@@ -52,7 +52,7 @@ const execute = async (interaction: CustonInteraction) => {
 
    } catch (error) {
       console.log(error);
-      ErrorService.reply(interaction, error as Error)
+      ErrorService.response(interaction, error as Error)
    }
 }
 
