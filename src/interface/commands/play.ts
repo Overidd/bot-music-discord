@@ -23,7 +23,6 @@ const execute = async (interaction: CustonInteraction) => {
    let lang;
 
    try {
-      interaction.deferReply();
 
       const controlPanelStatus = PanelStatusHandler.get(
          interaction.client,
@@ -62,6 +61,8 @@ const execute = async (interaction: CustonInteraction) => {
             flags: MessageFlags.Ephemeral
          });
       }
+
+      interaction.deferReply();
 
       await interaction.client.player!.playWithTimeout(
          voiceChannel as any,

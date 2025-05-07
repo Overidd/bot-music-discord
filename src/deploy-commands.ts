@@ -12,7 +12,7 @@ const main = async () => {
       console.log(`Empezó a actualizar ${commands.size} application (/) commands.`);
 
       const data = await rest.put(
-         Routes.applicationGuildCommands(ENV.CLIENT_ID_BOT, ENV.GUILD_ID_SERVER),
+         Routes.applicationCommands(ENV.CLIENT_ID_BOT),
          { body: commands.map(c => c.data.toJSON()) },
       ) as { length: number };
 
