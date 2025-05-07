@@ -11,7 +11,7 @@ const options = {
       .setDescription('Musica de YouTube, Spotify')
       .addStringOption(option =>
          option.setName('query')
-            .setDescription('Musica de YouTube, Spotify')
+            .setDescription('Busca por el nombre o url')
             .setRequired(true)
       ),
 };

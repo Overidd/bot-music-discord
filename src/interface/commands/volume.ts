@@ -12,7 +12,7 @@ const options = {
       .setDescription('Controla el volumen')
       .addIntegerOption(option =>
          option.setName('number')
-            .setDescription('Controla el volumen')
+            .setDescription('Ingresa el nivel de volumen')
             .setRequired(true)
             .setMinValue(0)
             .setMaxValue(100)

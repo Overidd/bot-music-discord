@@ -39,6 +39,7 @@ const execute = async (interaction: CustonInteraction) => {
       const client = interaction.client;
 
       LangService.set(guildId, lang);
+      await LangService.commandChange(guildId, lang)
 
       const controlPanelStatus = PanelStatusHandler.get(client, guildId);
       controlPanelStatus?.setLang(lang);
