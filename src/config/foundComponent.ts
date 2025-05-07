@@ -1,7 +1,8 @@
 
 export const ConfigFoundComponent = {
    color: '#5865f2',
-   nameAutor: {
+
+   foundNameAutor: {
       label: '',
       maxLength: 25,
       ellipsis: '...',
@@ -14,6 +15,6 @@ export const ConfigFoundComponent = {
       source: '',
    },
 
-   nameAutorFormat: (key: string, value: string) => `${key}: **${value}**`,
+   nameAutorFormat: (key: string, value: string) => `${key}: ${value}`,
    fieldFormat: (key: string, value: string) => `• ${key}: **${value}**`,
-}
+} 
