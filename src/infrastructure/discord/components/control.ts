@@ -29,7 +29,7 @@ interface IEmbedHeader {
 }
 interface IEmbedBody {
    duration?: string,
-   volumen?: string,
+   volume?: string,
    quantityInQueue?: string,
 }
 
@@ -85,7 +85,8 @@ class EmbedComponent {
          const field = this.CONFIG_DATA.field[key as FieldKeys]
          return {
             name: field.label,
-            value: field.value(value)
+            value: field.value(value),
+            inline: true,
          }
       })
 
