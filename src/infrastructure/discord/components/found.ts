@@ -33,15 +33,17 @@ export class FoundComponent {
    }
 
    header(data: IEmbedHeader) {
-      const name = data.nameMusic.length > this.CONFIG_DATA.nameAutor.maxLength
-         ? data.nameMusic.slice(0, this.CONFIG_DATA.nameAutor.maxLength) + this.CONFIG_DATA.nameAutor.ellipsis
+      const name = data.nameMusic.length > this.CONFIG_DATA.foundNameAutor.maxLength
+         ? data.nameMusic.slice(0, this.CONFIG_DATA.foundNameAutor.maxLength) + this.CONFIG_DATA.foundNameAutor.ellipsis
          : data.nameMusic
+
+      console.log({ name });
 
       this.embed
          .setColor(this.CONFIG_DATA.color as any)
          .setAuthor({
-            name: this.CONFIG_DATA.nameAutorFormat(this.CONFIG_DATA.nameAutor.label, name),
-            ...(this.CONFIG_DATA.nameAutor.canShowIconUrl ? { iconURL: data.imageMusic } : {})
+            name: this.CONFIG_DATA.nameAutorFormat(this.CONFIG_DATA.foundNameAutor.label, name),
+            ...(this.CONFIG_DATA.foundNameAutor.canShowIconUrl ? { iconURL: data.imageMusic } : {})
          })
 
       return this
