@@ -25,7 +25,7 @@ const execute = async (interaction: CustonInteraction) => {
       const queue = interaction?.client?.player?.getQueue(interaction.guildId!);
 
       if (!queue || !queue.playing || queue.songs.length === 0) {
-         throw CustonError.validation('No hay música reproduciéndose.')
+         throw CustonError.validation('errorNotPlaying')
       };
 
       const embed = new PanelStatusComponent.Embed()
@@ -40,7 +40,7 @@ const execute = async (interaction: CustonInteraction) => {
          .body({
             duration: queue?.formattedDuration,
             quantityInQueue: String(queue.songs.length),
-            volumen: String(queue.volume),
+            volume: String(queue.volume),
          })
          .footer({
             text: '\u00A0',
