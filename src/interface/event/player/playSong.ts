@@ -19,6 +19,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
          client,
          queue.textChannel?.guildId
       )
+
       if (!controlPanelStatus) {
          lang = LangService.get(queue.textChannel?.guildId)
       }
@@ -35,7 +36,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
          .body({
             duration: song?.formattedDuration,
             quantityInQueue: String(queue.songs.length),
-            volumen: String(queue.volume),
+            volume: String(queue.volume),
          })
          .footer({
             text: '\u00A0',
@@ -63,7 +64,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
          const controlPanelStatusEntity = new ControlPanelStatusEntity()
             .setRespon(sentMessage)
             .setData({
-               lang: lang ?? controlPanelStatus?.getLang!,
+               lang: lang ?? 'es',
                guildId: queue.textChannel.guildId,
                valume: 50,
             })
@@ -72,6 +73,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
       }
 
    } catch (error) {
+      console.log(error);
       ErrorService.send(queue, error as Error)
    }
 }

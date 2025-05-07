@@ -1,7 +1,7 @@
 import { Timeout } from '../../utils';
 import { CustonInteraction } from '../../doman/types';
-import { ErrorService } from '../../application/service';
 import { PanelStatusHandler } from '../../application/handler/controlPanel';
+import { ErrorService, LangService } from '../../application/service';
 import { SlashCommandBuilder, GuildTextBasedChannel, MessageFlags } from 'discord.js';
 import { EmbedComponent, FoundComponent, PanelStatusComponent } from '../../infrastructure/discord';
 
@@ -20,35 +20,48 @@ const execute = async (interaction: CustonInteraction) => {
    if (!interaction.isChatInputCommand()) return;
 
    const voiceChannel = interaction.member.voice.channel;
-
-   if (!voiceChannel) {
-      return interaction.reply({
-         embeds: [EmbedComponent.warning('Debes estar en un canal de voz para usar este comando')],
-         flags: MessageFlags.Ephemeral
-      });
-   }
-
-   const query = interaction.options.getString('query')?.replace(/\(.*?\)|\[.*?\]/g, '').trim();
-
-   //TODO: Haria falta de validar el query si es de tipo url o spotify o youtube y si es un nombre
-   if (!query) {
-      return interaction.reply({
-         embeds: [EmbedComponent.warning('Por favor escribe un nombre de música')],
-         flags: MessageFlags.Ephemeral
-      });
-   }
-
-   const textChannel = interaction.channel as GuildTextBasedChannel | null;
-
-   if (!textChannel) {
-      return interaction.reply({
-         embeds: [EmbedComponent.warning('No se pudo encontrar un canal de texto.')],
-         flags: MessageFlags.Ephemeral
-      });
-   }
+   let lang;
 
    try {
       interaction.deferReply();
+
+      const controlPanelStatus = PanelStatusHandler.get(
+         interaction.client,
+         interaction.guildId!
+      );
+
+      if (!controlPanelStatus) {
+         lang = LangService.get(interaction.guildId!)
+      }
+
+      const embedComponent = new EmbedComponent()
+         .setLang(controlPanelStatus?.getLang ?? lang)
+
+      if (!voiceChannel) {
+         return interaction.reply({
+            embeds: [embedComponent.warning('warningHasVoiceChannel')],
+            flags: MessageFlags.Ephemeral
+         });
+      }
+
+      const query = interaction.options.getString('query')?.replace(/\(.*?\)|\[.*?\]/g, '').trim();
+
+      //TODO: Haria falta de validar el query si es de tipo url o spotify o youtube y si es un nombre
+      if (!query) {
+         return interaction.reply({
+            embeds: [embedComponent.warning('warningHasWriteTheNameMusic')],
+            flags: MessageFlags.Ephemeral
+         });
+      }
+
+      const textChannel = interaction.channel as GuildTextBasedChannel | null;
+
+      if (!textChannel) {
+         return interaction.reply({
+            embeds: [embedComponent.warning('warningNotTextChannel')],
+            flags: MessageFlags.Ephemeral
+         });
+      }
 
       await interaction.client.player!.playWithTimeout(
          voiceChannel as any,
@@ -60,13 +73,7 @@ const execute = async (interaction: CustonInteraction) => {
 
       console.log('Play');
 
-      const queue = interaction.client.player?.getQueue
-         (interaction.guildId!);
-
-      const controlPanelStatus = PanelStatusHandler.get(
-         interaction.client,
-         interaction.guildId!
-      );
+      const queue = interaction.client.player?.getQueue(interaction.guildId!);
 
       if (controlPanelStatus) {
          const embed = new PanelStatusComponent.Embed()
@@ -84,6 +91,7 @@ const execute = async (interaction: CustonInteraction) => {
       }
 
       const embed = new FoundComponent()
+         .setLang(controlPanelStatus?.getLang ?? lang ?? 'es')
          .header({
             imageMusic: queue?.songs.at(-1)?.thumbnail,
             nameMusic: queue?.songs.at(-1)?.name!,

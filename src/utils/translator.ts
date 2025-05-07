@@ -2,9 +2,12 @@ import cloneDeep from 'lodash/cloneDeep';
 
 export const dictionarys = {
    es: {
+      foundNameAutor: 'Agregado',
+      volume: 'Volumen',
+      autor: 'Autor',
+      source: 'Fuente',
       nameAutor: 'Panel de control',
       duration: 'Duración',
-      volume: 'Volumen',
       quantityInQueue: 'En cola',
       btnBack: 'Atrás',
       btnPause: 'Pausa',
@@ -20,31 +23,61 @@ export const dictionarys = {
       actionMuteSong: 'Muteado por',
       actionLoopActive: 'Loop activado por',
       actionLoopDisactive: 'Loop desactivado por',
+      errorNotPlaying: 'No hay música reproduciéndose',
+      errorNoQueueToSkip: 'No hay más canciones en la cola para saltar',
+      errorNoHistoryToBack: 'No hay canción anterior en el historial.',
+      errro500: 'Ocurrio un error del servidor',
+      success: '',
+      successFinished: 'Finalizado',
+      warning: '',
+      warningHasVoiceChannel: 'Debes estar en un canal de voz para usar este comando',
+      warningHasWriteTheNameMusic: 'Por favor escribe un nombre de música',
+      warningNotTextChannel: 'No se pudo encontrar un canal de texto.',
+      settingVolumen: 'Volumen ajustado',
+      settingLanguaje: 'Se cambio de idoma a'
    },
    en: {
-      nameAutor: 'Control panel',
-      duration: 'Duration',
+      foundNameAutor: 'Added',
       volume: 'Volume',
+      autor: 'Author',
+      source: 'Source',
+      nameAutor: 'Control Panel',
+      duration: 'Duration',
       quantityInQueue: 'In queue',
       btnBack: 'Back',
       btnPause: 'Pause',
       btnPlay: 'Play',
       btnSkip: 'Skip',
       btnStop: 'Stop',
-      btnLoopDesactive: 'Deactivate Loop',
-      btnLoopActive: 'Activate Loop',
+      btnLoopDesactive: 'Disable Loop',
+      btnLoopActive: 'Enable Loop',
       btnMuteSong: 'Mute',
       btnActiveSong: 'Activate',
       btnPlaylist: 'Playlist',
       actionActivateSong: 'Activated by',
       actionMuteSong: 'Muted by',
-      actionLoopActive: 'Loop activated by',
-      actionLoopDisactive: 'Loop deactivated by',
+      actionLoopActive: 'Loop enabled by',
+      actionLoopDisactive: 'Loop disabled by',
+      errorNotPlaying: 'No music is playing',
+      errorNoQueueToSkip: 'No more songs in the queue to skip',
+      errorNoHistoryToBack: 'No previous song in the history.',
+      errro500: 'A server error occurred',
+      success: '',
+      successFinished: 'Finished',
+      warning: '',
+      warningHasVoiceChannel: 'You must be in a voice channel to use this command',
+      warningHasWriteTheNameMusic: 'Please write a song name',
+      warningNotTextChannel: 'A text channel could not be found.',
+      settingVolumen: 'Volume adjusted',
+      settingLanguaje: 'Language changed to'
    }
 } as const;
 
 
 export type LangCode = keyof typeof dictionarys;
+export type typeErrorLang = 'errorNotPlaying' | 'errorNoQueueToSkip' | 'errorNoHistoryToBack' | 'errro500';
+export type typeSuccessLag = 'successFinished'
+export type typeWarning = 'warningHasVoiceChannel' | 'warningHasWriteTheNameMusic' | 'warningNotTextChannel';
 
 export class Translator {
    private lang?: LangCode;

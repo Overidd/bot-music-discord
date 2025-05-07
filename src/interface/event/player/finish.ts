@@ -11,8 +11,15 @@ const options = {
 const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
    PanelStatusHandler.delete(client, queue.textChannel?.guildId!)
 
+   const controlPanelStatus = PanelStatusHandler.get(
+      client,
+      queue?.textChannel?.guildId!
+   )
+   const embedComponent = new EmbedComponent()
+      .setLang(controlPanelStatus?.getLang)
+
    const message = await queue.textChannel?.send({
-      embeds: [EmbedComponent.success('Finalizado')]
+      embeds: [embedComponent.success('successFinished')]
    });
    if (!message) return;
 
@@ -22,4 +29,4 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
 export const event = {
    ...options,
    execute
-}
+} 

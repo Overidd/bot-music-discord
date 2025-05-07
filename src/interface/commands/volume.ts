@@ -1,11 +1,10 @@
 import { Timeout } from '../../utils';
-import { SlashCommandBuilder } from 'discord.js';
 import { CustonError } from '../../doman/error';
+import { SlashCommandBuilder } from 'discord.js';
 import { CustonInteraction } from '../../doman/types';
 import { PanelStatusHandler } from '../../application/handler/controlPanel';
 import { ErrorService, SongService } from '../../application/service';
 import { EmbedComponent, PanelStatusComponent } from '../../infrastructure/discord';
-
 
 const options = {
    data: new SlashCommandBuilder()
@@ -29,7 +28,7 @@ const execute = async (interaction: CustonInteraction) => {
       const queue = interaction?.client?.player?.getQueue(interaction.guildId!);
 
       if (!queue || !queue.playing || queue.songs.length === 0) {
-         throw CustonError.validation('No hay música reproduciéndose.')
+         throw CustonError.validation('errorNotPlaying')
       };
 
       await new SongService()
@@ -42,13 +41,13 @@ const execute = async (interaction: CustonInteraction) => {
 
       if (!controlPanelStatus) throw Error;
 
-      controlPanelStatus.setValume(queue.volume) 
+      controlPanelStatus.setValume(queue.volume)
 
       const embed = new PanelStatusComponent.Embed()
          .setLang(controlPanelStatus.getLang)
          .from(controlPanelStatus.getRespon!.embeds[0])
          .bodyUpdate({
-            volumen: String(levelVolume)
+            volume: String(levelVolume)
          })
          .build();
 
@@ -58,7 +57,10 @@ const execute = async (interaction: CustonInteraction) => {
             isActiveSong: levelVolume > 0,
             isPlaying: queue?.playing && !queue?.paused ? true : false,
             isActiveLoop: queue?.repeatMode === 2,
-         }).buildRows()
+         }).buildRows();
+
+      const embedComponent = new EmbedComponent()
+         .setLang(controlPanelStatus.getLang)
 
       await controlPanelStatus.getRespon?.edit({
          embeds: [embed],
@@ -66,7 +68,7 @@ const execute = async (interaction: CustonInteraction) => {
       });
 
       await interaction.reply({
-         embeds: [EmbedComponent.settingVolumen(`Volumen ajustado: **[${levelVolume}]**%`)]
+         embeds: [embedComponent.settingVolumen(String(levelVolume))]
       })
 
       const response = await interaction.fetchReply()

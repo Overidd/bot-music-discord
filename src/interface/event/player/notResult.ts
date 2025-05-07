@@ -8,8 +8,6 @@ const options = {
 
 const execute = async (client: ClientDiscord, interaction: CustonInteraction, textChannel: any, error: any) => {
 
-   console.log({ textChannel, error });
-
    if (!interaction.isChatInputCommand()) return
 
    await interaction.followUp({
