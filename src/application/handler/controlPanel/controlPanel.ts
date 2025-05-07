@@ -3,7 +3,8 @@ import { ControlPanelStatusEntity } from '../../../doman/entity';
 
 export class PanelStatusHandler {
    static create(client: ClientDiscord, entity: ControlPanelStatusEntity) {
-      if (entity?.guildId && client.controlPanelStatus.has(entity.guildId)) return;
+      if (entity?.guildId && client.controlPanelStatus.has(entity.guildId))
+         return;
 
       client?.controlPanelStatus.set(
          entity.guildId!,
@@ -24,11 +25,12 @@ export class PanelStatusHandler {
    static get(client: ClientDiscord, guildId: string): ControlPanelStatusEntity | undefined {
       if (!guildId) {
          // throw new Error('No implement guildId')
+         return
       }
       if (!client.controlPanelStatus.has(guildId)) {
          // throw new Error('No implement controlPanelStatus')
+         return
       }
-
       return client.controlPanelStatus.get(guildId)
    }
 }
