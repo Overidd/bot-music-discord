@@ -79,7 +79,7 @@ export const configControlComponet = {
       btnMuteSong: {
          name: EventButtons.BTN_MUTESONG,
          emoji: '🔇',
-         canShowLabel: false,
+         canShowLabel: true,
          label: '',
          style: 2,
       },
