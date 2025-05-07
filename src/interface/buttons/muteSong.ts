@@ -27,13 +27,12 @@ const execute = async (interaction: CustonInteraction) => {
       const embed = new PanelStatusComponent.Embed()
          .setLang(controlPanelStatus.getLang)
          .from(controlPanelStatus.getRespon!.embeds[0])
-         .bodyUpdate({ volumen: String(0) })
+         .bodyUpdate({ volume: String(0) })
          .footerUpdate({
             text: interaction.user.username,
             iconUser: interaction.user.displayAvatarURL(),
             textAction: 'actionMuteSong'
-         })
-         .build()
+         }).build()
 
       const queue = interaction.client.player?.getQueue(interaction.guildId!)
       if (!queue) throw Error;

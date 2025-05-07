@@ -31,8 +31,7 @@ const execute = async (interaction: CustonInteraction) => {
             text: interaction.user.username,
             iconUser: interaction.user.displayAvatarURL(),
             textAction: 'actionLoopDisactive'
-         })
-         .build();
+         }).build();
 
       const queue = interaction.client.player?.getQueue(interaction.guildId!)
       if (!queue) throw Error;

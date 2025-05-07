@@ -21,7 +21,7 @@ const execute = async (interaction: CustonInteraction) => {
          interaction.guildId!
       )
 
-      if (!controlPanelStatus) throw Error;
+      if (!controlPanelStatus?.getRespon) throw Error;
 
       const embed = new PanelStatusComponent.Embed()
          .setLang(controlPanelStatus.getLang)
@@ -30,8 +30,7 @@ const execute = async (interaction: CustonInteraction) => {
             text: interaction.user.username,
             iconUser: interaction.user.displayAvatarURL(),
             textAction: 'actionMuteSong'
-         })
-         .build()
+         }).build()
 
       const queue = interaction.client.player?.getQueue(interaction.guildId!)
       if (!queue) throw Error;
@@ -52,6 +51,7 @@ const execute = async (interaction: CustonInteraction) => {
       await interaction.deferUpdate();
 
    } catch (error) {
+      console.log(error);
       ErrorService.reply(interaction, error as Error)
    }
 }
