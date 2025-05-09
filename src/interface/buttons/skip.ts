@@ -1,5 +1,6 @@
 import { CustonInteraction, EventButtons } from '../../doman/types';
 import { ErrorService, SongService } from '../../application/service';
+import { PanelStatusHandler } from '../../application/handler/controlPanel';
 
 const options = {
    data: {
@@ -14,7 +15,14 @@ const execute = async (interaction: CustonInteraction) => {
       await SongService.getInstance()
          .skip(interaction);
 
-      await interaction.deferUpdate();
+      const controlPanelStatus = PanelStatusHandler.get(
+         interaction.client,
+         interaction.guildId!
+      )
+      
+      await interaction.deferReply()
+      await controlPanelStatus?.deleteRespon()
+      controlPanelStatus?.setBtnSkipInteraction(interaction)
 
    } catch (error) {
       ErrorService.response(interaction, error as Error)

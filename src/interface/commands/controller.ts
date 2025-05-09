@@ -61,7 +61,8 @@ const execute = async (interaction: CustonInteraction) => {
          components: components,
       });
 
-      controlPanelStatus.setterRespon = await interaction.fetchReply();
+      const message = await interaction.fetchReply();
+      controlPanelStatus.setRespon(message)
 
    } catch (error) {
       ErrorService.response(interaction, error as Error)

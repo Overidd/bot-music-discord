@@ -4,28 +4,27 @@ export const configControlComponet = {
    embed: {
       color: '#5865f2',
       title: (text: string) => `\`🎵 ${text}\``,
-      description: (text: string) => `\` ${text} \``,
-      nameAutor: '', // Panel de control
+      description: (text: string, url?: string) => `**[${text}](${url})** \n`,
+      nameAutor: '',
 
       field: {
          duration: {
-            label: '⏱️  ',
+            label: '⠀', // U+2800
             value: (text: string) => `\`   ${text}   \``
          },
          volume: {
-            label: '🔊 ',
+            label: '⠀', // U+2800
             value: (text: string) => {
                const simbol = text.includes('live') ? '🔴' : '%'
                return `\`   ${text} ${simbol}   \``
             },
          },
          quantityInQueue: {
-            label: '📃 ',
+            label: '⠀', // U+2800
             value: (text: string) => `\`   ${text}   \``
          }
       }
    },
-
    buttons: {
       btnBack: {
          name: EventButtons.BTN_BACK,

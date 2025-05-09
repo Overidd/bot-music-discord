@@ -11,9 +11,17 @@ const options = {
 
 const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
    let lang;
-   //TODO: puede ser que pordiramos obtener el idioma del servidor
+
    try {
       if (!queue.textChannel?.guildId) throw Error;
+
+      // if (queue?.stopped && !queue?.playing && !queue.paused) {
+      //    console.log('------ ENTRO XD ------');
+      //    return
+      // }
+
+      // console.log('PLAY_SONG');
+
 
       const controlPanelStatus = PanelStatusHandler.get(
          client,
@@ -42,22 +50,42 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
             text: '\u00A0',
             iconUser: 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746313476/qukbvlboemwfpgxgdd5s.gif'
          })
-         .build()
-
+         .build();
+      console.log('-------1--------');
+      console.log(queue.songs);
+      console.log(queue.previousSongs);
+      console.log(queue?.playing && !queue?.paused);
+      console.log(queue?.playing, queue?.paused);
       const components = new PanelStatusComponent.Buttons()
          .setLang(lang ?? controlPanelStatus?.getLang)
          .create({
             isActiveSong: queue?.volume > 0,
             isPlaying: queue?.playing && !queue?.paused,
             isActiveLoop: queue?.repeatMode === 2,
-         }).buildRows()
+         }).buildRows();
+
+      await controlPanelStatus?.deleteBtnSkipInteraction()
+      await controlPanelStatus?.deleteBtnBackInteraction()
+
+      console.log('-------2--------');
+      console.log(queue.songs);
+      console.log(queue.previousSongs);
+      console.log(queue?.playing && !queue?.paused);
+      console.log(queue?.playing, queue?.paused);
 
       const sentMessage = await queue.textChannel?.send({
          embeds: [embed],
          components,
       });
 
-      if (controlPanelStatus && controlPanelStatus?.setRespon) {
+      // if (!queue?.playing && !queue?.paused && !queue.stopped) {
+      //    await sentMessage?.delete()
+      //    // sentMessage.st
+      //    await queue.stop()
+      //    return
+      // }
+
+      if (controlPanelStatus && sentMessage) {
          controlPanelStatus.setRespon(sentMessage)
 
       } else {
@@ -71,9 +99,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
 
          PanelStatusHandler.create(client, controlPanelStatusEntity);
       }
-
    } catch (error) {
-      console.log(error);
       ErrorService.send(queue, error as Error)
    }
 }

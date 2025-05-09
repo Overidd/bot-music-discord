@@ -1,10 +1,10 @@
 import { Timeout } from '../../utils';
+import { CustonError } from '../../doman/error';
 import { CustonInteraction } from '../../doman/types';
 import { PanelStatusHandler } from '../../application/handler/controlPanel';
 import { ErrorService, LangService } from '../../application/service';
 import { SlashCommandBuilder, GuildTextBasedChannel } from 'discord.js';
 import { FoundComponent, PanelStatusComponent } from '../../infrastructure/discord';
-import { CustonError } from '../../doman/error';
 
 const options = {
    data: new SlashCommandBuilder()
@@ -23,7 +23,7 @@ const execute = async (interaction: CustonInteraction) => {
    const voiceChannel = interaction.member.voice.channel;
    let lang;
    try {
-      
+
       const controlPanelStatus = PanelStatusHandler.get(
          interaction.client,
          interaction.guildId!
@@ -39,13 +39,13 @@ const execute = async (interaction: CustonInteraction) => {
       //TODO: Haria falta de validar el query si es de tipo url o spotify o youtube y si es un nombre
 
       if (!query) throw CustonError.validation('errorHasWriteTheNameMusic');
-      
+
       const textChannel = interaction.channel as GuildTextBasedChannel | null;
-      
+
       if (!textChannel) throw CustonError.validation('errorNotTextChannel');
-      
+
       await interaction.deferReply();
-      
+
       await interaction.client.player!.playWithTimeout(
          voiceChannel as any,
          query, {
@@ -73,25 +73,30 @@ const execute = async (interaction: CustonInteraction) => {
          });
       }
 
-      const embed = new FoundComponent()
-         .setLang(controlPanelStatus?.getLang ?? lang ?? 'es')
-         .header({
-            imageMusic: queue?.songs.at(-1)?.thumbnail,
-            nameMusic: queue?.songs.at(-1)?.name!,
-         })
-         .body({
-            autor: queue?.songs.at(-1)?.uploader.name,
-            duration: String(queue?.songs.at(-1)?.formattedDuration),
-            source: queue?.songs.at(-1)?.source,
-         })
-         .build();
+      if ((queue?.songs.length ?? 0) > 1) {
+         const embed = new FoundComponent()
+            .setLang(controlPanelStatus?.getLang ?? lang ?? 'es')
+            .header({
+               imageMusic: queue?.songs.at(-1)?.thumbnail,
+               nameMusic: queue?.songs.at(-1)?.name!,
+            })
+            .body({
+               autor: queue?.songs.at(-1)?.uploader.name,
+               duration: String(queue?.songs.at(-1)?.formattedDuration),
+               source: queue?.songs.at(-1)?.source,
+            })
+            .build();
 
-      await interaction.editReply({
-         embeds: [embed],
-      });
+         await interaction.editReply({
+            embeds: [embed],
+         });
 
-      const response = await interaction.fetchReply()
-      Timeout.delete(response, 15_000);
+         const response = await interaction.fetchReply()
+         Timeout.delete(response, 15_000);
+      } else {
+         interaction.deleteReply()
+      }
+
 
    } catch (error) {
       // if (error instanceof DisTubeError && error?.errorCode === 'NO_RESULT') {

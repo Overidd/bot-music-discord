@@ -7,6 +7,7 @@ export class Timeout {
    static async delete(response: IMessageRespons | InteractionResponse, time: number = 2_000): Promise<boolean> {
       return await new Promise((resolve) => {
          const timeout = setTimeout(async () => {
+            if (!response) return;
             response.delete().catch((error) => {
                console.log('Error al eliminar el mensaje: ', error);
             });

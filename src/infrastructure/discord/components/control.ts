@@ -90,7 +90,7 @@ class EmbedComponent {
          }
       })
 
-      this.emdeb!.addFields({ name: '\u200B', value: '\u200B' }, ...fields);
+      this.emdeb!.addFields(...fields);
       return this;
    }
 
@@ -150,9 +150,8 @@ class EmbedComponent {
          iconURL: imageDefaul[nameSourceMusic] ?? undefined
       });
 
-      if (nameMusic) embed.setTitle(this.CONFIG_DATA.title(nameMusic));
-
-      if (ValidateUrl.baseHttp(urlMusic)) embed.setURL(urlMusic!);
+      if (nameMusic) embed.setDescription(this.CONFIG_DATA.description(nameMusic, urlMusic));
+      // if (ValidateUrl.baseHttp(urlMusic)) embed.setURL(urlMusic!);
 
       embed.setThumbnail(imageMusic ?? imageDefaul.defaulImagenMusic)
    }

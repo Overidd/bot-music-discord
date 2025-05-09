@@ -51,7 +51,6 @@ const execute = async (interaction: CustonInteraction) => {
       await interaction.deferUpdate();
 
    } catch (error) {
-      console.log(error);
       ErrorService.response(interaction, error as Error)
    }
 }

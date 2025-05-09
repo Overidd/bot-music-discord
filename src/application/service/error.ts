@@ -23,14 +23,22 @@ export class ErrorService {
 
          if (error instanceof CustonError) {
 
-            interaction.deferred && !interaction.replied && await interaction.editReply({ embeds: [embedComponent.error(error.typeMessage as any)] });
+            interaction.deferred && !interaction.replied && await interaction.editReply({
+               embeds: [embedComponent.error(error.typeMessage as any)],
+            });
 
-            !interaction.deferred && !interaction.replied && await interaction.reply({ embeds: [embedComponent.error(error.typeMessage as any)] });
+            !interaction.deferred && !interaction.replied && await interaction.reply({
+               embeds: [embedComponent.error(error.typeMessage as any)],
+            });
 
          } else {
-            interaction.deferred && !interaction.replied && await interaction.editReply({ embeds: [embedComponent.error('errro500')] });
+            interaction.deferred && !interaction.replied && await interaction.editReply({
+               embeds: [embedComponent.error('errro500')],
+            });
 
-            !interaction.deferred && !interaction.replied && await interaction.reply({ embeds: [embedComponent.error('errro500')] });
+            !interaction.deferred && !interaction.replied && await interaction.reply({
+               embeds: [embedComponent.error('errro500')],
+            });
          }
 
          if (interaction.replied || interaction.deferred) {

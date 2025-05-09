@@ -30,6 +30,7 @@ export class ClientDistube extends DisTube {
          emitNewSongOnly: true,
          emitAddSongWhenCreatingQueue: false,
          emitAddListWhenCreatingQueue: false,
+         nsfw: true,
          ffmpeg: { path: ffmpegPath },
          plugins: plugins,
       };

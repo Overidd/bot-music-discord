@@ -36,7 +36,11 @@ const main = async () => {
 }
 
 (async () => {
-   await main();
+   try {
+      await main();
+   } catch (error) {
+      console.error('Captura Error en app', error)
+   }
 })();
 
 
