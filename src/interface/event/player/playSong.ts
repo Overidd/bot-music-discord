@@ -13,15 +13,11 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
    let lang;
 
    try {
-      if (!queue.textChannel?.guildId) throw Error;
-
       // if (queue?.stopped && !queue?.playing && !queue.paused) {
-      //    console.log('------ ENTRO XD ------');
       //    return
       // }
 
-      // console.log('PLAY_SONG');
-
+      if (!queue.textChannel?.guildId) throw Error;
 
       const controlPanelStatus = PanelStatusHandler.get(
          client,
@@ -51,11 +47,7 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
             iconUser: 'https://res.cloudinary.com/df4jfvyjm/image/upload/v1746313476/qukbvlboemwfpgxgdd5s.gif'
          })
          .build();
-      console.log('-------1--------');
-      console.log(queue.songs);
-      console.log(queue.previousSongs);
-      console.log(queue?.playing && !queue?.paused);
-      console.log(queue?.playing, queue?.paused);
+
       const components = new PanelStatusComponent.Buttons()
          .setLang(lang ?? controlPanelStatus?.getLang)
          .create({
@@ -67,23 +59,11 @@ const execute = async (client: ClientDiscord, queue: Queue, song: Song) => {
       await controlPanelStatus?.deleteBtnSkipInteraction()
       await controlPanelStatus?.deleteBtnBackInteraction()
 
-      console.log('-------2--------');
-      console.log(queue.songs);
-      console.log(queue.previousSongs);
-      console.log(queue?.playing && !queue?.paused);
-      console.log(queue?.playing, queue?.paused);
 
       const sentMessage = await queue.textChannel?.send({
          embeds: [embed],
          components,
       });
-
-      // if (!queue?.playing && !queue?.paused && !queue.stopped) {
-      //    await sentMessage?.delete()
-      //    // sentMessage.st
-      //    await queue.stop()
-      //    return
-      // }
 
       if (controlPanelStatus && sentMessage) {
          controlPanelStatus.setRespon(sentMessage)

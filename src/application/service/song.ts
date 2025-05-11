@@ -83,6 +83,7 @@ export class SongService {
          return
       }
       await queue.stop();
+      await queue.voice.leave();
    }
 
    public async activeMusic(interaction: CustonInteraction) {
